@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Scarico elastici</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0c2b2c">
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -884,6 +889,8 @@ document.body.dataset.tab = cur;
 renderAll();
 moveInd();
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(moveInd);
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(e => console.warn('SW non registrato', e));
+
 </script>
 </body>
 </html>
