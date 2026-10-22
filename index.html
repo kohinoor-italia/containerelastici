@@ -234,7 +234,8 @@ table.t.pk tr.tot td.ne{ background:transparent !important; border:0; }
   .sq,.sq.on{ transform:none; box-shadow:none; animation:none; }
   .sq{ border-radius:11px; }
   .sq.on{ border-radius:11px; background:#fff; border-color:#2b4a48; color:inherit; }
-  .sq.part.on{ border-color:var(--amb); color:var(--amb); background:var(--ambl); }
+  .sq.part,.sq.part.on{ color:#000; border-color:#000; background:#fff; }
+
   table.t thead{ display:table-header-group; }
   table.t tr{ break-inside:avoid; }
   table.t tbody tr:hover td{ background:inherit; }
@@ -676,7 +677,8 @@ function autoFit(which){
   let lo = MIN;
   if (b){
     const page = 190 * 96 / 25.4 * 0.95;         /* înălțimea utilă A4 landscape */
-    const h = z => { b.style.zoom = z; return b.offsetHeight; };
+    const h = z => { b.style.zoom = z; return b.getBoundingClientRect().height; };
+
     const n = 1;                                       /* mereu o singură foaie */
 
     let hi = 2.2;
