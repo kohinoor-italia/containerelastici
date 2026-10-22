@@ -1,0 +1,15 @@
+{
+  "name": "Scarico Elastici",
+  "short_name": "Scarico Elastici",
+  "description": "Scarico container, picking ed etichette",
+  "lang": "it",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#e9efee",
+  "theme_color": "#0c2b2c",
+  "icons": [
+    { "src": "icon.png", "sizes": "any", "type": "image/png", "purpose": "any" },
+    { "src": "icon.png", "sizes": "any", "type": "image/png", "purpose": "maskable" }
+  ]
+}
