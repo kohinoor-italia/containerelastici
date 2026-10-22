@@ -27,17 +27,18 @@
   .bar{ display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; align-items:center; }
   .empty{ padding:40px 10px; text-align:center; color:#777; }
 
-  table.t{ border-collapse:collapse; width:100%; font-size:15px; }
-  table.t th, table.t td{ border:1px solid #333; padding:7px 9px; text-align:left; vertical-align:middle; }
-  table.t th{ background:#e9eef0; }
-  table.t td.n, table.t th.n{ text-align:right; }
-  table.t tr.tot td{ font-weight:700; background:#f2f2f2; }
-  .code{ font-weight:700; font-size:17px; white-space:nowrap; }
-  .sqs{ display:flex; gap:10px; flex-wrap:wrap; }
-  .sq{ width:58px; height:58px; border:2px solid #111; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:700; cursor:pointer; user-select:none; }
-  .sq.part{ border-style:dashed; }
-  .sq.on{ border-radius:50%; background:#d9f5e8; border-color:#0b6e4f; }
-  .chk{ width:26px; height:26px; border:2px solid #111; display:inline-block; }
+    table.t{ border-collapse:separate; border-spacing:0; width:100%; font-size:15px; border:1px solid #d5dbe1; border-radius:10px; overflow:hidden; }
+  table.t th{ background:#0b6e4f; color:#fff; font-size:12px; letter-spacing:.06em; text-transform:uppercase; padding:10px 12px; text-align:left; }
+  table.t td{ padding:9px 12px; border-top:1px solid #e3e8ed; vertical-align:middle; }
+  table.t tbody tr:nth-child(even) td{ background:#f6f9f8; }
+  table.t td.n, table.t th.n{ text-align:right; font-variant-numeric:tabular-nums; }
+  table.t tr.tot td{ font-weight:700; background:#e3f1ec !important; border-top:2px solid #0b6e4f; }
+  .code{ font-weight:700; font-size:16px; white-space:nowrap; color:#0b3d2e; }
+  .sqs{ display:flex; gap:8px; flex-wrap:wrap; }
+  .sq{ min-width:54px; height:40px; padding:0 8px; border:2px solid #2b3a42; border-radius:8px; background:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; cursor:pointer; user-select:none; }
+  .sq.part{ border-style:dashed; border-color:#c2410c; color:#c2410c; background:#fff7ed; }
+  .sq.on{ border-radius:999px; background:#d9f5e8; border-color:#0b6e4f; color:#0b6e4f; }
+  .chk{ width:22px; height:22px; border:2px solid #2b3a42; border-radius:6px; display:inline-block; }
 
   .labels{ display:flex; flex-wrap:wrap; gap:14px; }
   .lbl{ width:var(--lw); aspect-ratio:496/751; border:1px dashed #aaa; background:#fff; }
@@ -51,12 +52,16 @@
   .pv-body{ flex:1; overflow:auto; padding:16px; }
   .pv-paper{ background:#fff; margin:0 auto; box-shadow:0 2px 12px rgba(0,0,0,.4); }
   .pv-paper.land{ width:297mm; padding:10mm; }
-  .pv-paper.port{ width:210mm; padding:8mm; }
   .pv-paper table.t{ font-size:13px; }
-  .pv-paper .labels{ gap:0; justify-content:center; }
-  .pv-paper .lbl{ width:92mm; border:0; }
+  .pv-paper table.t td{ padding:6px 10px; }
+  .pv-paper.land table.t{ zoom:var(--fit,1); }
+
+  .pv-paper.lab{ width:100mm; background:transparent; box-shadow:none; padding:0; }
+  .pv-paper.lab .labels{ display:block; }
+  .pv-paper.lab .lbl{ width:100mm; height:150mm; aspect-ratio:auto; border:0; margin-bottom:10mm; box-shadow:0 2px 12px rgba(0,0,0,.4); }
 
   @media print{
+    *{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
     body{ background:#fff; }
     header, nav, .bar, .hint, .noprint{ display:none !important; }
     .pv{ display:none !important; }
@@ -65,13 +70,19 @@
     body[data-print="scarico"] #p-scarico,
     body[data-print="picking"] #p-picking,
     body[data-print="labels"] #p-labels{ display:block; }
-    .sq.on{ border-radius:0; background:none; border-color:#111; }
-    :root{ --lw:92mm; }
-    .labels{ gap:0; justify-content:center; }
-    .lbl{ border:0; break-inside:avoid; page-break-inside:avoid; }
-    table.t{ font-size:13px; }
+    .sq.on{ border-radius:8px; background:#fff; border-color:#2b3a42; color:inherit; }
+    .sq.part.on{ border-color:#c2410c; color:#c2410c; background:#fff7ed; }
+    table.t{ font-size:13px; zoom:var(--fit,1); }
+
+    table.t td{ padding:6px 10px; }
+    table.t thead{ display:table-header-group; }
     table.t tr{ break-inside:avoid; }
+    /* o etichetă = o pagină */
+    .labels{ display:block; }
+    .lbl{ width:100mm; height:150mm; aspect-ratio:auto; border:0; break-after:page; page-break-after:always; }
+    .lbl:last-child{ break-after:auto; page-break-after:auto; }
   }
+
 </style>
 </head>
 <body>
@@ -96,7 +107,7 @@
 <main>
   <section class="panel active" id="p-scarico">
     <div class="bar">
-      <button class="btn" data-act="xlsx-scarico">Descarcă Excel</button>
+
       <button class="btn sec" data-act="print-scarico">Previzualizare PDF</button>
     </div>
     <p class="hint">Apasă pe un pătrat ca să-l încercuiești pe ecran (pe hârtie se încercuiește cu pixul).</p>
@@ -105,7 +116,7 @@
 
   <section class="panel" id="p-picking">
     <div class="bar">
-      <button class="btn" data-act="xlsx-picking">Descarcă Excel</button>
+
       <button class="btn sec" data-act="print-picking">Previzualizare PDF</button>
     </div>
     <div id="pickingOut"></div>
@@ -336,13 +347,36 @@ function downloadXlsx(kind){
   XLSX.writeFile(wb, (kind === 'scarico' ? 'Scarico_' : 'Picking_') + (state.order || 'ordine') + '.xlsx');
 }
 
+/* ---------- Potrivire pe o pagină A4 ---------- */
+function computeFit(which){
+  const root = document.documentElement;
+  root.style.setProperty('--fit', 1);
+  if (which === 'labels') return;
+  const src = { scarico:'scaricoOut', picking:'pickingOut' }[which];
+  const m = document.createElement('div');
+  m.className = 'pv-paper land';
+  m.style.cssText = 'position:absolute;left:-9999px;top:0;visibility:hidden;';
+  m.innerHTML = $(src).innerHTML;
+  document.body.appendChild(m);
+  const t = m.querySelector('table.t');
+  const h = t ? t.offsetHeight : 0;
+  m.remove();
+  const avail = 190 * 96 / 25.4 * 0.96; // înălțime utilă A4 landscape (px), cu mică marjă
+  const fit = h > 0 ? Math.max(0.5, Math.min(1, avail / h)) : 1;
+  root.style.setProperty('--fit', fit.toFixed(3));
+}
+
+
 /* ---------- Print / PDF ---------- */
 function printSection(which){
+  computeFit(which);
+
   let st = document.getElementById('pageStyle');
   if (!st){ st = document.createElement('style'); st.id = 'pageStyle'; document.head.appendChild(st); }
   st.textContent = which === 'labels'
-    ? '@page{ size:A4 portrait; margin:8mm; }'
+    ? '@page{ size:100mm 150mm; margin:0; }'
     : '@page{ size:A4 landscape; margin:10mm; }';
+
   document.body.dataset.print = which;
   setTimeout(() => {
     window.print();
@@ -354,10 +388,13 @@ function printSection(which){
 let pvWhich = '';
 function openPreview(which){
   pvWhich = which;
+  computeFit(which);
+
   const src = { scarico:'scaricoOut', picking:'pickingOut', labels:'labelsOut' }[which];
   const paper = $('pvPaper');
   paper.style.zoom = 1;
-  paper.className = 'pv-paper ' + (which === 'labels' ? 'port' : 'land');
+  paper.className = 'pv-paper ' + (which === 'labels' ? 'lab' : 'land');
+
   paper.innerHTML = which === 'labels'
     ? '<div class="labels">' + $(src).innerHTML + '</div>'
     : $(src).innerHTML;
