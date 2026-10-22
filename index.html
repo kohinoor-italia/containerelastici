@@ -795,7 +795,8 @@ document.addEventListener('click', e => {
   else if (act === 'print') printSection(cur);
   else if (act === 'xlsx') downloadXlsx(cur === 'scarico' ? 'scarico' : 'picking');
   else if (act === 'resetticks'){ state.ticks = {}; save(); renderScarico(); renderPicking(); toast('Spunte cancellate'); }
-  else if (act === 'tzauto'){ state.tblZoom = 0; save(); syncCtl(); }
+  else if (act === 'tzauto'){ state.tblZoom = 0; save(); syncCtl(); tzShow(); tzHide(); }
+
   else if (act === 'lblreset'){ state.lblScale = 100; state.lblX = 0; state.lblY = 0; save(); syncCtl(); scheduleLabels(); }
 });
 
@@ -810,7 +811,9 @@ function tzShow(){
   const src = { scarico:'scaricoOut', picking:'pickingOut' }[cur];
   const paper = $('tzPaper'), wrap = $('tzWrap');
   clearTimeout(tzHideT);
-  paper.style.setProperty('--fit', (state.tblZoom / 100).toFixed(3));
+  const z = state.tblZoom || autoPct();
+  paper.style.setProperty('--fit', (z / 100).toFixed(3));
+
   paper.innerHTML = '<div class="tzin">' + $(src).innerHTML + '</div>';
   $('tzpv').classList.add('show');
   paper.style.transform = 'none';
@@ -831,7 +834,8 @@ function tzShow(){
     }
   });
   tin.insertAdjacentHTML('beforeend', marks);
-  $('tzInfo').textContent = 'Foi A4: ' + pages + ' · ' + state.tblZoom + '%';
+  $('tzInfo').textContent = 'Foi A4: ' + pages + ' · ' + z + '%';
+
 
 }
 function tzHide(){ clearTimeout(tzHideT); tzHideT = setTimeout(() => $('tzpv').classList.remove('show'), 700); }
