@@ -19,6 +19,9 @@
 /* dimensiuni "de tipar" – folosite la print, la previzualizare și la calculul auto-A4 */
 @media print{ :root{ --tfs:13px; --tpy:6px; --tpx:10px; --sqw:56px; --sqh:42px; --sqf:14px; --cfs:16px; --pkh:30pt; } }
 .meas,.pv-paper{ --tfs:13px; --tpy:6px; --tpx:10px; --sqw:56px; --sqh:42px; --sqf:14px; --cfs:16px; --pkh:30pt; }
+.meas #scaricoOut .code,.pv-paper .code{ font-size:20px; }
+.meas #scaricoOut td.n,.pv-paper table.t:not(.pk) td.n{ font-size:17px; font-weight:800; }
+
 
 *{ box-sizing:border-box; }
 html{ scroll-behavior:smooth; }
@@ -237,6 +240,9 @@ table.t.pk tr.tot td.ne{ background:transparent !important; border:0; }
   .sq.part,.sq.part.on{ color:#000; border-color:#000; background:#fff; }
 
   table.t thead{ display:table-header-group; }
+  #p-scarico .code{ font-size:20px; }
+  #p-scarico table.t td.n{ font-size:17px; font-weight:800; }
+
   table.t tr{ break-inside:avoid; }
   table.t tbody tr:hover td{ background:inherit; }
   .pk-sheet{ min-width:0; }
