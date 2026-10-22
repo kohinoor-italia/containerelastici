@@ -655,19 +655,22 @@ function autoFit(which){
   m.innerHTML = $(src).innerHTML;
   document.body.appendChild(m);
   const b = m.querySelector('.fitbox');
-  let lo = 0.5;
+  const MIN = 0.8;                               /* scala minimă lizibilă (80%) */
+  let lo = MIN;
   if (b){
-    const avail = 190 * 96 / 25.4 * 0.965;
+    const page = 190 * 96 / 25.4 * 0.95;         /* înălțimea utilă A4 landscape */
+    const h = z => { b.style.zoom = z; return b.offsetHeight; };
+    const n = Math.max(1, Math.ceil(h(MIN) / page));   /* nr. de foi necesare la minim */
     let hi = 2.2;
     for (let i = 0; i < 14; i++){
       const mid = (lo + hi) / 2;
-      b.style.zoom = mid;
-      if (b.offsetHeight > avail) hi = mid; else lo = mid;
+      if (h(mid) > n * page) hi = mid; else lo = mid;
     }
   }
   m.remove();
   return lo;
 }
+
 function computeFit(which){
   let f = 1;
   if (which !== 'labels') f = state.tblZoom > 0 ? state.tblZoom / 100 : autoFit(which);
