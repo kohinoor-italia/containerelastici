@@ -472,7 +472,9 @@ function parseWorkbook(buf, name){
   state.fileName = name;
   state.loadedAt = new Date().toLocaleString('it-IT');
   state.ticks = {};
+  state.tblZoom = 0;
   selL = 0;
+
   save();
 }
 
@@ -669,12 +671,14 @@ function autoFit(which){
   m.innerHTML = $(src).innerHTML;
   document.body.appendChild(m);
   const b = m.querySelector('.fitbox');
-  const MIN = 0.8;                               /* scala minimă lizibilă (80%) */
+  const MIN = 0.4;                               /* minimul slider-ului: caută scara pt. 1 singură foaie */
+
   let lo = MIN;
   if (b){
     const page = 190 * 96 / 25.4 * 0.95;         /* înălțimea utilă A4 landscape */
     const h = z => { b.style.zoom = z; return b.offsetHeight; };
-    const n = Math.max(1, Math.ceil(h(MIN) / page));   /* nr. de foi necesare la minim */
+    const n = 1;                                       /* mereu o singură foaie */
+
     let hi = 2.2;
     for (let i = 0; i < 14; i++){
       const mid = (lo + hi) / 2;
