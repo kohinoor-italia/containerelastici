@@ -56,9 +56,10 @@
   .pv-paper table.t td{ padding:6px 10px; }
   .pv-paper.land table.t{ zoom:var(--fit,1); }
 
-  .pv-paper.lab{ width:100mm; background:transparent; box-shadow:none; padding:0; }
+  .pv-paper.lab{ width:210mm; background:transparent; box-shadow:none; padding:0; }
   .pv-paper.lab .labels{ display:block; }
-  .pv-paper.lab .lbl{ width:100mm; height:150mm; aspect-ratio:auto; border:0; margin-bottom:10mm; box-shadow:0 2px 12px rgba(0,0,0,.4); }
+  .pv-paper.lab .lbl{ width:195.49mm; height:296mm; aspect-ratio:496/751; border:0; margin:0 auto 10mm; box-shadow:0 2px 12px rgba(0,0,0,.4); }
+
 
   @media print{
     *{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
@@ -79,7 +80,8 @@
     table.t tr{ break-inside:avoid; }
     /* o etichetă = o pagină */
     .labels{ display:block; }
-    .lbl{ width:100mm; height:150mm; aspect-ratio:auto; border:0; break-after:page; page-break-after:always; }
+    .lbl{ width:195.49mm; height:296mm; aspect-ratio:496/751; border:0; margin:0 auto; break-after:page; page-break-after:always; }
+
     .lbl:last-child{ break-after:auto; page-break-after:auto; }
   }
 
@@ -443,7 +445,8 @@ function printSection(which){
   let st = document.getElementById('pageStyle');
   if (!st){ st = document.createElement('style'); st.id = 'pageStyle'; document.head.appendChild(st); }
   st.textContent = which === 'labels'
-    ? '@page{ size:100mm 150mm; margin:0; }'
+    ? '@page{ size:A4 portrait; margin:0; }'
+
     : '@page{ size:A4 landscape; margin:10mm; }';
 
   document.body.dataset.print = which;
