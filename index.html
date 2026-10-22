@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ro">
+<html lang="it">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,7 +13,13 @@
   --ink:#0c2b2c; --ink2:#14433f; --acc:#12a37f; --accd:#0b7a5f; --accl:#d9f5ea;
   --amb:#e8730c; --ambl:#fff3e6; --bg:#e9efee; --line:#d3dfdc; --mut:#5b6f6c;
   --lw:190px; --ease:cubic-bezier(.3,1.4,.5,1);
+  /* dimensiuni compacte pe ecran (16:9) */
+  --tfs:13px; --tpy:5px; --tpx:10px; --sqw:46px; --sqh:32px; --sqf:13px; --cfs:14px; --pkh:22pt;
 }
+/* dimensiuni "de tipar" – folosite la print, la previzualizare și la calculul auto-A4 */
+@media print{ :root{ --tfs:13px; --tpy:6px; --tpx:10px; --sqw:56px; --sqh:42px; --sqf:14px; --cfs:16px; --pkh:30pt; } }
+.meas,.pv-paper{ --tfs:13px; --tpy:6px; --tpx:10px; --sqw:56px; --sqh:42px; --sqf:14px; --cfs:16px; --pkh:30pt; }
+
 *{ box-sizing:border-box; }
 html{ scroll-behavior:smooth; }
 body{ margin:0; font-family:'Manrope',system-ui,Arial,sans-serif; color:var(--ink); min-height:100vh;
@@ -22,51 +28,52 @@ svg{ display:block; }
 button{ font-family:inherit; }
 
 /* ---------- Header ---------- */
-.top{ position:sticky; top:0; z-index:30; display:flex; flex-wrap:wrap; align-items:center; gap:14px 24px; padding:12px 24px;
-  background:linear-gradient(120deg,#0a2223,#0f3a37 60%,#10463f); color:#e6f6f1; box-shadow:0 6px 24px rgba(8,30,30,.28); }
-.brand{ display:flex; align-items:center; gap:12px; min-width:0; }
-.logo{ width:42px; height:42px; border-radius:12px; display:grid; place-items:center; background:linear-gradient(135deg,#27d3a8,#0b8a6b); color:#04261e; box-shadow:0 4px 14px rgba(39,211,168,.4); flex:none; }
-.logo svg{ width:24px; height:24px; }
-.brand b{ font-size:19px; font-weight:800; letter-spacing:-.01em; display:block; }
-.brand small{ display:block; font-size:12.5px; color:#9fc9bf; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:46vw; }
-.seg{ position:relative; display:flex; padding:4px; border-radius:999px; background:rgba(255,255,255,.09); margin:0 auto; }
-.seg .ind{ position:absolute; left:0; top:4px; bottom:4px; width:0; border-radius:999px; background:#fff; box-shadow:0 3px 12px rgba(0,0,0,.25); transition:transform .4s var(--ease),width .4s var(--ease); }
-.seg button{ position:relative; z-index:1; border:0; background:none; color:#bfe0d7; padding:9px 20px; font-size:14px; font-weight:700; border-radius:999px; cursor:pointer; transition:color .25s; }
+.top{ position:sticky; top:0; z-index:30; display:flex; flex-wrap:wrap; align-items:center; gap:8px 20px; padding:8px 18px;
+  background:linear-gradient(120deg,#0a2223,#0f3a37 60%,#10463f); color:#e6f6f1; box-shadow:0 4px 18px rgba(8,30,30,.28); }
+.brand{ display:flex; align-items:center; gap:10px; min-width:0; }
+.logo{ width:34px; height:34px; border-radius:10px; display:grid; place-items:center; background:linear-gradient(135deg,#27d3a8,#0b8a6b); color:#04261e; box-shadow:0 3px 10px rgba(39,211,168,.4); flex:none; }
+.logo svg{ width:20px; height:20px; }
+.brand b{ font-size:16px; font-weight:800; letter-spacing:-.01em; display:block; }
+.brand small{ display:block; font-size:11.5px; color:#9fc9bf; margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:42vw; }
+.seg{ position:relative; display:flex; padding:3px; border-radius:999px; background:rgba(255,255,255,.09); margin:0 auto; }
+.seg .ind{ position:absolute; left:0; top:3px; bottom:3px; width:0; border-radius:999px; background:#fff; box-shadow:0 3px 12px rgba(0,0,0,.25); transition:transform .4s var(--ease),width .4s var(--ease); }
+.seg button{ position:relative; z-index:1; border:0; background:none; color:#bfe0d7; padding:6px 16px; font-size:13px; font-weight:700; border-radius:999px; cursor:pointer; transition:color .25s; }
 .seg button.active{ color:var(--ink); }
-.set{ display:flex; gap:16px; align-items:flex-end; flex-wrap:wrap; }
-.set label{ display:flex; flex-direction:column; gap:4px; font-size:11.5px; color:#9fc9bf; font-weight:600; }
-.set input{ font:700 14px 'Manrope',sans-serif; color:#fff; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.18); border-radius:10px; padding:7px 10px; outline:0; transition:.2s; color-scheme:dark; }
+.set{ display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap; }
+.set label{ display:flex; flex-direction:column; gap:2px; font-size:11px; color:#9fc9bf; font-weight:600; }
+.set input{ font:700 13px 'Manrope',sans-serif; color:#fff; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.18); border-radius:8px; padding:4px 8px; outline:0; transition:.2s; color-scheme:dark; }
 .set input:focus{ border-color:#27d3a8; background:rgba(255,255,255,.16); }
 .step{ display:flex; align-items:center; gap:4px; }
-.step input{ width:64px; text-align:center; padding:7px 4px; -moz-appearance:textfield; }
+.step input{ width:56px; text-align:center; padding:4px 2px; -moz-appearance:textfield; }
 .step input::-webkit-inner-spin-button{ display:none; }
-.step button{ width:30px; height:32px; border:0; border-radius:9px; background:rgba(255,255,255,.12); color:#fff; font-size:17px; cursor:pointer; transition:.2s; }
+.step button{ width:26px; height:28px; border:0; border-radius:8px; background:rgba(255,255,255,.12); color:#fff; font-size:15px; cursor:pointer; transition:.2s; }
 .step button:hover{ background:#27d3a8; color:#04261e; transform:translateY(-1px); }
 .step button:active{ transform:scale(.9); }
 
 /* ---------- KPI ---------- */
-.kpis{ display:flex; gap:12px; padding:18px 24px 6px; max-width:1500px; margin:0 auto; flex-wrap:wrap; }
-.kpi{ flex:1 1 140px; background:#fff; border-radius:16px; padding:12px 16px; border:1px solid #fff; box-shadow:0 2px 10px rgba(12,43,44,.06); transition:.25s; }
+.kpis{ display:flex; gap:10px; padding:10px 18px 2px; max-width:1800px; margin:0 auto; }
+.kpi{ flex:1 1 0; min-width:0; background:#fff; border-radius:12px; padding:7px 14px; border:1px solid #fff; box-shadow:0 2px 8px rgba(12,43,44,.06); transition:.25s; }
 .kpi:hover{ transform:translateY(-2px); box-shadow:0 8px 20px rgba(12,43,44,.1); }
-.kpi b{ display:block; font-size:26px; font-weight:800; letter-spacing:-.02em; font-variant-numeric:tabular-nums; line-height:1.1; }
-.kpi small{ color:var(--mut); font-size:12.5px; font-weight:600; }
+.kpi b{ display:block; font-size:20px; font-weight:800; letter-spacing:-.02em; font-variant-numeric:tabular-nums; line-height:1.1; }
+.kpi small{ color:var(--mut); font-size:11.5px; font-weight:600; white-space:nowrap; }
 .kpi.hl{ background:linear-gradient(135deg,#12a37f,#0b7a5f); color:#fff; }
 .kpi.hl small{ color:#c8f2e4; }
 .kpi.am b{ color:var(--amb); }
+body[data-tab="labels"] .kpis{ display:none; }
 
-/* ---------- Panouri ---------- */
-main{ max-width:1500px; margin:12px auto 110px; padding:0 24px; }
-.panel{ display:none; background:#fff; border-radius:22px; padding:20px; box-shadow:0 10px 36px rgba(12,43,44,.08); border:1px solid #f2f6f5; }
+/* ---------- Pannelli ---------- */
+main{ max-width:1800px; margin:8px auto 90px; padding:0 18px; }
+.panel{ display:none; background:#fff; border-radius:18px; padding:14px; box-shadow:0 10px 36px rgba(12,43,44,.08); border:1px solid #f2f6f5; }
 .panel.active{ display:block; animation:in .4s ease; }
 @keyframes in{ from{ opacity:0; transform:translateY(10px); } }
-.bar{ display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; align-items:center; }
+.bar{ display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap; align-items:center; }
 .bar .sp{ flex:1; }
-.hint{ font-size:13px; color:var(--mut); margin:0 0 14px; }
-.chip{ display:inline-flex; align-items:center; gap:6px; background:var(--accl); color:var(--accd); border-radius:999px; padding:6px 12px; font-size:13px; font-weight:700; }
+.hint{ font-size:12px; color:var(--mut); margin:0 0 8px; }
+.chip{ display:inline-flex; align-items:center; gap:6px; background:var(--accl); color:var(--accd); border-radius:999px; padding:4px 10px; font-size:12px; font-weight:700; }
 
-.btn{ position:relative; overflow:hidden; display:inline-flex; align-items:center; gap:8px; border:0; border-radius:12px; padding:10px 16px; font-size:14px; font-weight:700; cursor:pointer;
-  background:linear-gradient(135deg,var(--acc),var(--accd)); color:#fff; box-shadow:0 4px 14px rgba(11,122,95,.3); transition:transform .25s var(--ease),box-shadow .25s; }
-.btn svg{ width:18px; height:18px; transition:transform .3s var(--ease); }
+.btn{ position:relative; overflow:hidden; display:inline-flex; align-items:center; gap:6px; border:0; border-radius:10px; padding:7px 13px; font-size:13px; font-weight:700; cursor:pointer;
+  background:linear-gradient(135deg,var(--acc),var(--accd)); color:#fff; box-shadow:0 3px 10px rgba(11,122,95,.3); transition:transform .25s var(--ease),box-shadow .25s; }
+.btn svg{ width:16px; height:16px; transition:transform .3s var(--ease); }
 .btn::after{ content:""; position:absolute; inset:0; background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.35) 50%,transparent 70%); transform:translateX(-120%); transition:transform .6s; }
 .btn:hover{ transform:translateY(-2px); box-shadow:0 8px 20px rgba(11,122,95,.38); }
 .btn:hover::after{ transform:translateX(120%); }
@@ -81,41 +88,42 @@ main{ max-width:1500px; margin:12px auto 110px; padding:0 24px; }
 .btn:disabled{ opacity:.4; pointer-events:none; }
 .btn:focus-visible,.fab-main:focus-visible,.seg button:focus-visible{ outline:3px solid #27d3a8; outline-offset:2px; }
 
-.zoomctl{ display:flex; align-items:center; gap:10px; background:#eef3f2; border-radius:12px; padding:5px 12px; font-size:13px; font-weight:600; color:var(--mut); }
-.zoomctl b{ min-width:44px; color:var(--ink); font-variant-numeric:tabular-nums; }
-input[type=range]{ -webkit-appearance:none; appearance:none; height:6px; border-radius:6px; background:#cfdcd9; outline:0; width:150px; }
-input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; width:20px; height:20px; border-radius:50%; background:var(--acc); border:3px solid #fff; box-shadow:0 2px 8px rgba(0,0,0,.3); cursor:pointer; transition:transform .2s; }
+.zoomctl{ display:flex; align-items:center; gap:8px; background:#eef3f2; border-radius:10px; padding:3px 10px; font-size:12px; font-weight:600; color:var(--mut); }
+.zoomctl b{ min-width:40px; color:var(--ink); font-variant-numeric:tabular-nums; }
+input[type=range]{ -webkit-appearance:none; appearance:none; height:6px; border-radius:6px; background:#cfdcd9; outline:0; width:130px; }
+input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; width:18px; height:18px; border-radius:50%; background:var(--acc); border:3px solid #fff; box-shadow:0 2px 8px rgba(0,0,0,.3); cursor:pointer; transition:transform .2s; }
 input[type=range]::-webkit-slider-thumb:hover{ transform:scale(1.2); }
-input[type=range]::-moz-range-thumb{ width:16px; height:16px; border-radius:50%; background:var(--acc); border:3px solid #fff; box-shadow:0 2px 8px rgba(0,0,0,.3); }
-.mini{ border:0; background:#fff; color:var(--accd); font-weight:800; font-size:12px; border-radius:8px; padding:4px 9px; cursor:pointer; box-shadow:0 1px 4px rgba(0,0,0,.15); }
+input[type=range]::-moz-range-thumb{ width:14px; height:14px; border-radius:50%; background:var(--acc); border:3px solid #fff; box-shadow:0 2px 8px rgba(0,0,0,.3); }
+.mini{ border:0; background:#fff; color:var(--accd); font-weight:800; font-size:12px; border-radius:8px; padding:3px 9px; cursor:pointer; box-shadow:0 1px 4px rgba(0,0,0,.15); }
 .mini:hover{ background:var(--accl); }
+.mini.on{ background:var(--acc); color:#fff; }
 
-/* ---------- Empty ---------- */
-.empty{ display:grid; place-items:center; gap:10px; text-align:center; padding:60px 20px; border:2.5px dashed #b6cdc7; border-radius:20px; color:var(--mut); cursor:pointer; transition:.3s; background:repeating-linear-gradient(135deg,#f8fbfa 0 14px,#f2f8f6 14px 28px); }
+/* ---------- Vuoto ---------- */
+.empty{ display:grid; place-items:center; gap:8px; text-align:center; padding:40px 20px; border:2.5px dashed #b6cdc7; border-radius:18px; color:var(--mut); cursor:pointer; transition:.3s; background:repeating-linear-gradient(135deg,#f8fbfa 0 14px,#f2f8f6 14px 28px); }
 .empty:hover{ border-color:var(--acc); background:#f0faf6; transform:scale(1.005); }
-.empty .ic{ width:68px; height:68px; border-radius:50%; background:var(--accl); color:var(--accd); display:grid; place-items:center; animation:bob 2.4s ease-in-out infinite; }
-.empty .ic svg{ width:32px; height:32px; }
-.empty b{ font-size:18px; color:var(--ink); }
+.empty .ic{ width:56px; height:56px; border-radius:50%; background:var(--accl); color:var(--accd); display:grid; place-items:center; animation:bob 2.4s ease-in-out infinite; }
+.empty .ic svg{ width:28px; height:28px; }
+.empty b{ font-size:17px; color:var(--ink); }
 @keyframes bob{ 50%{ transform:translateY(-6px); } }
 
-/* ---------- Tabele ---------- */
-table.t{ border-collapse:separate; border-spacing:0; width:100%; font-size:15px; border:1px solid #d7e2df; border-radius:14px; overflow:hidden; }
-table.t th{ background:var(--ink); color:#d9f3ec; font-size:12px; font-weight:700; letter-spacing:.05em; padding:12px 14px; text-align:left; }
-table.t td{ padding:9px 14px; border-top:1px solid #e5ecea; vertical-align:middle; transition:background .2s; }
+/* ---------- Tabelle ---------- */
+table.t{ border-collapse:separate; border-spacing:0; width:100%; font-size:var(--tfs); border:1px solid #d7e2df; border-radius:12px; overflow:hidden; }
+table.t th{ background:var(--ink); color:#d9f3ec; font-size:11px; font-weight:700; letter-spacing:.04em; padding:8px 10px; text-align:left; }
+table.t td{ padding:var(--tpy) var(--tpx); border-top:1px solid #e5ecea; vertical-align:middle; transition:background .2s; }
 table.t tbody tr:nth-child(even) td{ background:#f6faf9; }
 table.t tbody tr:hover td{ background:#eaf7f2; }
 table.t td.n,table.t th.n{ text-align:right; font-variant-numeric:tabular-nums; }
 table.t tr.tot td{ font-weight:800; background:#dff3ec !important; border-top:2px solid var(--accd); }
-.code{ font-weight:800; font-size:16px; white-space:nowrap; color:var(--ink2); }
-.sqs{ display:flex; gap:8px; flex-wrap:wrap; }
-.sq{ min-width:56px; height:42px; padding:0 10px; border:2px solid #2b4a48; border-radius:11px; background:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:800; cursor:pointer; user-select:none; transition:border-radius .3s var(--ease),background .2s,transform .2s,box-shadow .2s; }
+.code{ font-weight:800; font-size:var(--cfs); white-space:nowrap; color:var(--ink2); }
+.sqs{ display:flex; gap:6px; flex-wrap:wrap; }
+.sq{ min-width:var(--sqw); height:var(--sqh); padding:0 8px; border:2px solid #2b4a48; border-radius:10px; background:#fff; display:flex; align-items:center; justify-content:center; font-size:var(--sqf); font-weight:800; cursor:pointer; user-select:none; transition:border-radius .3s var(--ease),background .2s,transform .2s,box-shadow .2s; }
 .sq:hover{ transform:translateY(-2px); box-shadow:0 5px 12px rgba(12,43,44,.18); }
 .sq.part{ border-style:dashed; border-color:var(--amb); color:var(--amb); background:var(--ambl); }
 .sq.on{ border-radius:999px; background:var(--accl); border-color:var(--accd); color:var(--accd); animation:pop .35s var(--ease); }
 @keyframes pop{ 40%{ transform:scale(1.18); } }
 
-/* ---------- Picking (ca în Excel) ---------- */
-#pickingOut{ overflow-x:auto; padding:4px; }
+/* ---------- Picking (come in Excel) ---------- */
+#pickingOut{ overflow-x:auto; padding:2px; }
 .pk-sheet{ font-family:Arial,Helvetica,sans-serif; color:#000; min-width:900px; }
 .pk-title{ text-align:center; font-weight:700; font-size:16pt; line-height:27.75pt; }
 .pk-par{ display:flex; justify-content:space-between; align-items:center; min-height:21.75pt; margin-bottom:6pt; font-size:11pt; }
@@ -124,7 +132,7 @@ table.t tr.tot td{ font-weight:800; background:#dff3ec !important; border-top:2p
 table.t.pk{ table-layout:fixed; border-collapse:collapse; border:0; border-radius:0; overflow:visible; font-family:Arial,Helvetica,sans-serif; font-size:10pt; }
 table.t.pk th,table.t.pk td{ border:1px solid #000; padding:3px 5px; color:#000; text-align:center; font-size:10pt; }
 table.t.pk th{ background:#d9d9d9; font-weight:700; letter-spacing:0; }
-table.t.pk tbody tr{ height:30pt; }
+table.t.pk tbody tr{ height:var(--pkh); }
 table.t.pk tbody tr:nth-child(even) td,table.t.pk tbody tr:hover td{ background:transparent; }
 table.t.pk td.l{ text-align:left; }
 table.t.pk td.b{ font-weight:700; }
@@ -141,34 +149,35 @@ table.t.pk tr.tot td.ne{ background:transparent !important; border:0; }
 .pk-sum td.val.big{ background:#d9d9d9; border:2px solid #000; font-size:13pt; }
 .pk-note{ font-size:9pt; font-style:italic; margin-top:12px; }
 
-/* ---------- Etichete ---------- */
-.lblwrap{ display:grid; grid-template-columns:300px 1fr; gap:20px; align-items:start; }
-.lbl-aside{ position:sticky; top:84px; display:flex; flex-direction:column; gap:14px; background:#f3f8f7; border-radius:18px; padding:16px; }
-.live .lbl{ width:100%; cursor:default; }
-.ctl{ display:flex; flex-direction:column; gap:6px; font-size:13px; font-weight:700; }
+/* ---------- Etichette ---------- */
+.lblwrap{ display:grid; grid-template-columns:320px 1fr; gap:16px; align-items:start; }
+.lbl-aside{ position:sticky; top:62px; max-height:calc(100vh - 74px); overflow:auto; display:flex; flex-direction:column; gap:10px; background:#f3f8f7; border-radius:16px; padding:12px; }
+.live{ display:flex; justify-content:center; }
+.live .lbl{ width:auto; height:min(42vh,400px); cursor:default; }
+.ctl{ display:flex; flex-direction:column; gap:3px; font-size:12px; font-weight:700; }
 .ctl span{ display:flex; justify-content:space-between; }
 .ctl span b{ color:var(--accd); font-variant-numeric:tabular-nums; }
 .ctl input[type=range]{ width:100%; }
-.labels{ display:grid; grid-template-columns:repeat(auto-fill,minmax(var(--lw),1fr)); gap:16px; }
+.labels{ display:grid; grid-template-columns:repeat(auto-fill,minmax(var(--lw),1fr)); gap:14px; }
 .lbl{ width:100%; aspect-ratio:496/751; background:#fff; border:1px solid var(--line); border-radius:10px; overflow:hidden; cursor:pointer; transition:transform .25s var(--ease),box-shadow .25s; }
 .lbl svg{ width:100%; height:100%; }
 .labels .lbl:hover{ transform:translateY(-4px) scale(1.02); box-shadow:0 12px 26px rgba(12,43,44,.18); }
 .lbl.sel{ outline:3px solid var(--acc); outline-offset:2px; }
 
-/* ---------- Previzualizare ---------- */
+/* ---------- Anteprima ---------- */
 .pv{ position:fixed; inset:0; z-index:60; display:none; flex-direction:column; background:rgba(7,24,24,.78); backdrop-filter:blur(10px); }
 .pv.open{ display:flex; animation:fade .25s; }
 @keyframes fade{ from{ opacity:0; } }
-.pv-top{ display:flex; flex-wrap:wrap; gap:10px 14px; align-items:center; padding:10px 20px; background:rgba(10,34,35,.92); color:#e6f6f1; border-bottom:1px solid rgba(255,255,255,.1); }
-.pv-top h3{ margin:0 8px 0 0; font-size:16px; font-weight:800; }
+.pv-top{ display:flex; flex-wrap:wrap; gap:8px 12px; align-items:center; padding:8px 16px; background:rgba(10,34,35,.92); color:#e6f6f1; border-bottom:1px solid rgba(255,255,255,.1); }
+.pv-top h3{ margin:0 8px 0 0; font-size:15px; font-weight:800; }
 .pv-top .grow{ flex:1; }
-.pv-top .btn.gh{ background:rgba(255,255,255,.12); color:#fff; padding:8px 13px; }
+.pv-top .btn.gh{ background:rgba(255,255,255,.12); color:#fff; padding:6px 11px; }
 .pv-top .btn.gh:hover{ background:rgba(255,255,255,.22); }
 .pv-top .zoomctl{ background:rgba(255,255,255,.1); color:#bfe0d7; }
 .pv-top .zoomctl b{ color:#fff; }
 .pgnav{ display:flex; align-items:center; gap:8px; font-weight:800; }
 .pgnav b{ min-width:70px; text-align:center; font-variant-numeric:tabular-nums; }
-.pv-stage{ flex:1; min-height:0; overflow:auto; display:flex; padding:24px; }
+.pv-stage{ flex:1; min-height:0; overflow:auto; display:flex; padding:20px; }
 .pv-wrap{ margin:auto; flex:none; }
 .pv-paper{ background:#fff; transform-origin:0 0; box-shadow:0 20px 60px rgba(0,0,0,.55); border-radius:2px; }
 .pv-paper.land{ width:297mm; min-height:210mm; padding:10mm; }
@@ -178,31 +187,31 @@ table.t.pk tr.tot td.ne{ background:transparent !important; border:0; }
 .pv-paper .pk-sheet{ min-width:0; }
 
 /* ---------- FAB ---------- */
-.fabwrap{ position:fixed; right:26px; bottom:26px; z-index:40; display:flex; flex-direction:column; align-items:flex-end; gap:14px; }
-.fab-list{ display:flex; flex-direction:column; gap:10px; align-items:flex-end; }
+.fabwrap{ position:fixed; right:20px; bottom:20px; z-index:40; display:flex; flex-direction:column; align-items:flex-end; gap:12px; }
+.fab-list{ display:flex; flex-direction:column; gap:8px; align-items:flex-end; }
 .fab-item{ display:flex; align-items:center; gap:10px; opacity:0; transform:translateY(18px) scale(.85); pointer-events:none; transition:opacity .25s,transform .35s var(--ease); transition-delay:calc((4 - var(--i)) * 45ms); }
 .fabwrap.open .fab-item{ opacity:1; transform:none; pointer-events:auto; }
-.fab-item span{ background:var(--ink); color:#fff; padding:7px 13px; border-radius:9px; font-size:13px; font-weight:700; box-shadow:0 6px 16px rgba(0,0,0,.25); white-space:nowrap; }
-.fab-item button{ width:48px; height:48px; border-radius:50%; border:0; background:#fff; color:var(--accd); display:grid; place-items:center; cursor:pointer; box-shadow:0 6px 18px rgba(12,43,44,.28); transition:transform .25s var(--ease),background .2s,color .2s; }
-.fab-item button svg{ width:22px; height:22px; }
+.fab-item span{ background:var(--ink); color:#fff; padding:5px 11px; border-radius:8px; font-size:12px; font-weight:700; box-shadow:0 6px 16px rgba(0,0,0,.25); white-space:nowrap; }
+.fab-item button{ width:40px; height:40px; border-radius:50%; border:0; background:#fff; color:var(--accd); display:grid; place-items:center; cursor:pointer; box-shadow:0 6px 18px rgba(12,43,44,.28); transition:transform .25s var(--ease),background .2s,color .2s; }
+.fab-item button svg{ width:20px; height:20px; }
 .fab-item button:hover{ background:var(--acc); color:#fff; transform:scale(1.12) rotate(-8deg); }
-.fab-main{ width:64px; height:64px; border-radius:50%; border:0; cursor:pointer; color:#fff; display:grid; place-items:center; background:linear-gradient(135deg,#27d3a8,#0b7a5f); box-shadow:0 12px 30px rgba(11,122,95,.5); transition:transform .3s var(--ease),box-shadow .3s; }
-.fab-main svg{ width:28px; height:28px; transition:transform .45s var(--ease); }
+.fab-main{ width:52px; height:52px; border-radius:50%; border:0; cursor:pointer; color:#fff; display:grid; place-items:center; background:linear-gradient(135deg,#27d3a8,#0b7a5f); box-shadow:0 12px 30px rgba(11,122,95,.5); transition:transform .3s var(--ease),box-shadow .3s; }
+.fab-main svg{ width:24px; height:24px; transition:transform .45s var(--ease); }
 .fab-main:hover{ transform:scale(1.08); }
 .fabwrap.open .fab-main svg{ transform:rotate(135deg); }
 .fabwrap:not(.open) .fab-main{ animation:pulse 2.8s infinite; }
-@keyframes pulse{ 0%{ box-shadow:0 12px 30px rgba(11,122,95,.5),0 0 0 0 rgba(39,211,168,.5); } 70%,100%{ box-shadow:0 12px 30px rgba(11,122,95,.5),0 0 0 18px rgba(39,211,168,0); } }
+@keyframes pulse{ 0%{ box-shadow:0 12px 30px rgba(11,122,95,.5),0 0 0 0 rgba(39,211,168,.5); } 70%,100%{ box-shadow:0 12px 30px rgba(11,122,95,.5),0 0 0 16px rgba(39,211,168,0); } }
 
 /* ---------- Toast + drop ---------- */
-.toast{ position:fixed; left:50%; bottom:28px; z-index:80; transform:translate(-50%,40px); opacity:0; background:var(--ink); color:#fff; padding:11px 20px; border-radius:999px; font-weight:700; font-size:14px; box-shadow:0 10px 30px rgba(0,0,0,.35); transition:.4s var(--ease); pointer-events:none; }
+.toast{ position:fixed; left:50%; bottom:24px; z-index:80; transform:translate(-50%,40px); opacity:0; background:var(--ink); color:#fff; padding:9px 18px; border-radius:999px; font-weight:700; font-size:13px; box-shadow:0 10px 30px rgba(0,0,0,.35); transition:.4s var(--ease); pointer-events:none; }
 .toast.show{ transform:translate(-50%,0); opacity:1; }
 .drop{ position:fixed; inset:14px; z-index:90; display:none; place-items:center; border:4px dashed var(--acc); border-radius:28px; background:rgba(233,247,242,.92); font-size:22px; font-weight:800; color:var(--accd); }
 .drop.show{ display:grid; }
 
-@media (max-width:980px){ .lblwrap{ grid-template-columns:1fr; } .lbl-aside{ position:static; } .seg{ order:3; width:100%; justify-content:center; margin:0; } .top{ padding:12px 14px; } main,.kpis{ padding-left:12px; padding-right:12px; } }
+@media (max-width:980px){ .lblwrap{ grid-template-columns:1fr; } .lbl-aside{ position:static; max-height:none; } .seg{ order:3; width:100%; justify-content:center; margin:0; } .top{ padding:8px 12px; } main,.kpis{ padding-left:10px; padding-right:10px; } .kpis{ flex-wrap:wrap; } .kpi{ flex:1 1 120px; } }
 @media (prefers-reduced-motion:reduce){ *{ animation:none !important; transition:none !important; } }
 
-/* ---------- Print ---------- */
+/* ---------- Stampa ---------- */
 @media print{
   *{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
   body{ background:#fff; min-height:0; }
@@ -212,10 +221,9 @@ table.t.pk tr.tot td.ne{ background:transparent !important; border:0; }
   body[data-print="scarico"] #p-scarico,body[data-print="picking"] #p-picking,body[data-print="labels"] #p-labels{ display:block; }
   .fitbox{ zoom:var(--fit,1); }
   .sq,.sq.on{ transform:none; box-shadow:none; animation:none; }
+  .sq{ border-radius:11px; }
   .sq.on{ border-radius:11px; background:#fff; border-color:#2b4a48; color:inherit; }
   .sq.part.on{ border-color:var(--amb); color:var(--amb); background:var(--ambl); }
-  table.t{ font-size:13px; }
-  table.t td{ padding:6px 10px; }
   table.t thead{ display:table-header-group; }
   table.t tr{ break-inside:avoid; }
   table.t tbody tr:hover td{ background:inherit; }
@@ -234,19 +242,19 @@ table.t.pk tr.tot td.ne{ background:transparent !important; border:0; }
 <header class="top">
   <div class="brand">
     <div class="logo" data-ic="box"></div>
-    <div><b>Scarico elastici</b><small id="meta">Niciun fișier încărcat</small></div>
+    <div><b>Scarico elastici</b><small id="meta">Nessun file caricato</small></div>
   </div>
   <nav class="seg" id="seg">
     <i class="ind" id="ind"></i>
     <button data-tab="scarico" class="active">Scarico</button>
     <button data-tab="picking">Picking</button>
-    <button data-tab="labels">Etichete</button>
+    <button data-tab="labels">Etichette</button>
   </nav>
   <div class="set">
-    <label>Pz / bancal
-      <div class="step"><button data-st="-10" aria-label="Mai puțin">−</button><input type="number" id="pallet" min="1" value="320"><button data-st="10" aria-label="Mai mult">+</button></div>
+    <label>Pz / bancale
+      <div class="step"><button data-st="-10" aria-label="Meno">−</button><input type="number" id="pallet" min="1" value="320"><button data-st="10" aria-label="Più">+</button></div>
     </label>
-    <label>Data etichetă<input type="date" id="ldate"></label>
+    <label>Data etichetta<input type="date" id="ldate"></label>
   </div>
   <input type="file" id="file" accept=".xlsx,.xls" hidden>
 </header>
@@ -256,40 +264,40 @@ table.t.pk tr.tot td.ne{ background:transparent !important; border:0; }
 <main>
   <section class="panel active" id="p-scarico">
     <div class="bar">
-      <button class="btn" data-act="preview" data-ic="eye"> Previzualizare</button>
-      <button class="btn sec" data-act="print" data-ic="print"> Printează</button>
+      <button class="btn" data-act="preview" data-ic="eye"> Anteprima</button>
+      <button class="btn sec" data-act="print" data-ic="print"> Stampa</button>
+      <span class="hint" style="margin:0 0 0 8px">Tocca un quadrato per cerchiarlo a schermo. Su carta si cerchia con la penna.</span>
       <span class="sp"></span>
-      <div class="zoomctl">Mărime tipar <input type="range" class="tz" min="40" max="220" step="5"><b class="tzv"></b><button class="mini" data-act="tzauto">Auto</button></div>
+      <div class="zoomctl">Dimensione stampa <input type="range" class="tz" min="40" max="220" step="5"><b class="tzv"></b><button class="mini" data-act="tzauto">Auto A4</button></div>
     </div>
-    <p class="hint">Apasă pe un pătrat ca să-l încercuiești pe ecran. Pe hârtie încercuiești cu pixul.</p>
     <div id="scaricoOut"></div>
   </section>
 
   <section class="panel" id="p-picking">
     <div class="bar">
-      <button class="btn" data-act="preview" data-ic="eye"> Previzualizare</button>
-      <button class="btn sec" data-act="print" data-ic="print"> Printează</button>
+      <button class="btn" data-act="preview" data-ic="eye"> Anteprima</button>
+      <button class="btn sec" data-act="print" data-ic="print"> Stampa</button>
       <span class="sp"></span>
-      <div class="zoomctl">Mărime tipar <input type="range" class="tz" min="40" max="220" step="5"><b class="tzv"></b><button class="mini" data-act="tzauto">Auto</button></div>
+      <div class="zoomctl">Dimensione stampa <input type="range" class="tz" min="40" max="220" step="5"><b class="tzv"></b><button class="mini" data-act="tzauto">Auto A4</button></div>
     </div>
     <div id="pickingOut"></div>
   </section>
 
   <section class="panel" id="p-labels">
     <div class="bar">
-      <button class="btn" data-act="preview" data-ic="eye"> Previzualizare</button>
-      <button class="btn sec" data-act="print" data-ic="print"> Printează</button>
+      <button class="btn" data-act="preview" data-ic="eye"> Anteprima</button>
+      <button class="btn sec" data-act="print" data-ic="print"> Stampa</button>
       <span class="chip" id="lblCount"></span>
     </div>
     <div class="lblwrap">
       <aside class="lbl-aside">
         <div class="live" id="lblLive"></div>
-        <label class="ctl"><span>Scală conținut <b class="v-lblScale"></b></span><input type="range" data-lbl="lblScale" min="50" max="130" step="1"></label>
-        <label class="ctl"><span>Deplasare orizontală <b class="v-lblX"></b></span><input type="range" data-lbl="lblX" min="-80" max="80" step="1"></label>
-        <label class="ctl"><span>Deplasare verticală <b class="v-lblY"></b></span><input type="range" data-lbl="lblY" min="-80" max="80" step="1"></label>
-        <label class="ctl"><span>Mărime miniaturi <b class="v-thumb"></b></span><input type="range" data-lbl="thumb" min="120" max="320" step="10"></label>
-        <button class="btn gh" data-act="lblreset" data-ic="reset"> Resetează ajustările</button>
-        <p class="hint" style="margin:0">Linia neagră groasă de jos = ultima etichetă a unui cod (aici rupi). Apasă pe o miniatură ca s-o vezi mare.</p>
+        <label class="ctl"><span>Scala contenuto <b class="v-lblScale"></b></span><input type="range" data-lbl="lblScale" min="50" max="130" step="1"></label>
+        <label class="ctl"><span>Spostamento orizzontale <b class="v-lblX"></b></span><input type="range" data-lbl="lblX" min="-80" max="80" step="1"></label>
+        <label class="ctl"><span>Spostamento verticale <b class="v-lblY"></b></span><input type="range" data-lbl="lblY" min="-80" max="80" step="1"></label>
+        <label class="ctl"><span>Dimensione miniature <b class="v-thumb"></b></span><input type="range" data-lbl="thumb" min="120" max="320" step="10"></label>
+        <button class="btn gh" data-act="lblreset" data-ic="reset"> Reimposta regolazioni</button>
+        <p class="hint" style="margin:0">La linea nera spessa in basso = ultima etichetta di un codice (qui si strappa). Clicca su una miniatura per vederla ingrandita.</p>
       </aside>
       <div class="labels" id="labelsOut"></div>
     </div>
@@ -298,33 +306,33 @@ table.t.pk tr.tot td.ne{ background:transparent !important; border:0; }
 
 <div class="fabwrap noprint" id="fab">
   <div class="fab-list">
-    <div class="fab-item" style="--i:0"><span>Încarcă xlsx</span><button data-act="load" data-ic="up" aria-label="Încarcă xlsx"></button></div>
-    <div class="fab-item" style="--i:1"><span>Previzualizare</span><button data-act="preview" data-ic="eye" aria-label="Previzualizare"></button></div>
-    <div class="fab-item" style="--i:2"><span>Printează</span><button data-act="print" data-ic="print" aria-label="Printează"></button></div>
-    <div class="fab-item" style="--i:3"><span>Export Excel</span><button data-act="xlsx" data-ic="sheet" aria-label="Export Excel"></button></div>
-    <div class="fab-item" style="--i:4"><span>Șterge bifările</span><button data-act="resetticks" data-ic="reset" aria-label="Șterge bifările"></button></div>
+    <div class="fab-item" style="--i:0"><span>Carica xlsx</span><button data-act="load" data-ic="up" aria-label="Carica xlsx"></button></div>
+    <div class="fab-item" style="--i:1"><span>Anteprima</span><button data-act="preview" data-ic="eye" aria-label="Anteprima"></button></div>
+    <div class="fab-item" style="--i:2"><span>Stampa</span><button data-act="print" data-ic="print" aria-label="Stampa"></button></div>
+    <div class="fab-item" style="--i:3"><span>Esporta Excel</span><button data-act="xlsx" data-ic="sheet" aria-label="Esporta Excel"></button></div>
+    <div class="fab-item" style="--i:4"><span>Cancella le spunte</span><button data-act="resetticks" data-ic="reset" aria-label="Cancella le spunte"></button></div>
   </div>
-  <button class="fab-main" id="fabMain" aria-label="Acțiuni" data-ic="plus"></button>
+  <button class="fab-main" id="fabMain" aria-label="Azioni" data-ic="plus"></button>
 </div>
 
 <div class="pv" id="pv">
   <div class="pv-top">
-    <h3 id="pvTitle">Previzualizare</h3>
+    <h3 id="pvTitle">Anteprima</h3>
     <div class="pgnav" id="pgnav"><button class="btn gh" id="pgPrev">‹</button><b id="pgNo"></b><button class="btn gh" id="pgNext">›</button></div>
-    <label class="zoomctl" id="pvScale">Scală <input type="range" data-lbl="lblScale" min="50" max="130" step="1"><b class="v-lblScale"></b></label>
+    <label class="zoomctl" id="pvScale">Scala <input type="range" data-lbl="lblScale" min="50" max="130" step="1"><b class="v-lblScale"></b></label>
     <span class="grow"></span>
-    <div class="zoomctl"><button class="mini" id="zOut">−</button><b id="zVal"></b><button class="mini" id="zIn">+</button><button class="mini" id="zFit">Potrivește</button></div>
-    <button class="btn" id="pvPrint" data-ic="print"> Printează / Salvează PDF</button>
-    <button class="btn gh" id="pvClose">Închide</button>
+    <div class="zoomctl"><button class="mini" id="zOut">−</button><b id="zVal"></b><button class="mini" id="zIn">+</button><button class="mini" id="zFit">Adatta</button></div>
+    <button class="btn" id="pvPrint" data-ic="print"> Stampa / Salva PDF</button>
+    <button class="btn gh" id="pvClose">Chiudi</button>
   </div>
   <div class="pv-stage" id="pvStage"><div class="pv-wrap" id="pvWrap"><div class="pv-paper" id="pvPaper"></div></div></div>
 </div>
 
 <div class="toast" id="toast"></div>
-<div class="drop" id="drop">Lasă fișierul xlsx aici</div>
+<div class="drop" id="drop">Rilascia qui il file xlsx</div>
 
 <script>
-/* ---------- Iconițe ---------- */
+/* ---------- Icone ---------- */
 const IC = {
   box:'M21 8l-9-5-9 5v8l9 5 9-5zM3 8l9 5 9-5M12 13v8',
   up:'M12 16V4m0 0L8 8m4-4l4 4M4 20h16',
@@ -360,14 +368,14 @@ function barcodeSvg(text, x, y, w, h){
   return out;
 }
 
-/* ---------- Date ---------- */
+/* ---------- Dati ---------- */
 const $ = id => document.getElementById(id);
 const LS = 'scarico_elastici_v1';
 let state = { items:[], order:'', orderDate:'', fileName:'', loadedAt:'', pallet:320, labelDate:'',
   lblScale:100, lblX:0, lblY:0, thumb:190, tblZoom:0, ticks:{} };
 let cur = 'scarico', labelsData = [], selL = 0;
 
-function save(){ try{ localStorage.setItem(LS, JSON.stringify(state)); }catch(e){ console.warn('localStorage indisponibil', e); } }
+function save(){ try{ localStorage.setItem(LS, JSON.stringify(state)); }catch(e){ console.warn('localStorage non disponibile', e); } }
 function load(){ try{ const s = localStorage.getItem(LS); if (s) state = Object.assign(state, JSON.parse(s)); }catch(e){} }
 
 const shortCode = c => c.replace(/^Y525/, '');
@@ -405,7 +413,7 @@ function toast(msg){
   clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 2400);
 }
 
-/* ---------- Parsare xlsx ---------- */
+/* ---------- Lettura xlsx ---------- */
 function fmtDate(v){
   let d = null;
   if (v instanceof Date) d = new Date(v.getTime() + 12 * 3600 * 1000);
@@ -421,7 +429,7 @@ function parseWorkbook(buf, name){
   const H = {};
   (rows[0] || []).forEach((h, i) => { if (typeof h === 'string') H[h.trim()] = i; });
   const need = ['CACODIC2', 'ITCODUBI', 'MVDESSUP', 'c_MVQTAMOV'];
-  for (const n of need) if (H[n] === undefined) throw new Error('Coloana "' + n + '" lipsește din fișier.');
+  for (const n of need) if (H[n] === undefined) throw new Error('La colonna "' + n + '" manca nel file.');
 
   const items = [];
   let order = '', orderDate = '';
@@ -442,13 +450,13 @@ function parseWorkbook(buf, name){
       qty: Math.round(qty)
     });
   }
-  if (!items.length) throw new Error('Nu am găsit articole în fișier.');
+  if (!items.length) throw new Error('Nessun articolo trovato nel file.');
   state.items = items;
   state.order = order;
   state.orderDate = orderDate;
   state.labelDate = orderDate || state.labelDate;
   state.fileName = name;
-  state.loadedAt = new Date().toLocaleString('ro-RO');
+  state.loadedAt = new Date().toLocaleString('it-IT');
   state.ticks = {};
   selL = 0;
   save();
@@ -458,15 +466,15 @@ function handleFile(f){
   if (!f) return;
   const rd = new FileReader();
   rd.onload = () => {
-    try { parseWorkbook(rd.result, f.name); renderAll(); toast(state.items.length + ' articole încărcate'); }
-    catch (err){ alert('Eroare la citirea fișierului: ' + err.message); }
+    try { parseWorkbook(rd.result, f.name); renderAll(); toast(state.items.length + ' articoli caricati'); }
+    catch (err){ alert('Errore nella lettura del file: ' + err.message); }
   };
   rd.readAsArrayBuffer(f);
 }
 
-/* ---------- Randare ---------- */
+/* ---------- Rendering ---------- */
 function esc(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
-function fmtRo(iso){ if (!iso) return ''; const [y, m, d] = iso.split('-'); return d + '/' + m + '/' + y; }
+function fmtIt(iso){ if (!iso) return ''; const [y, m, d] = iso.split('-'); return d + '/' + m + '/' + y; }
 const tk = k => state.ticks[k] ? ' on' : '';
 
 function renderKpis(){
@@ -475,17 +483,17 @@ function renderKpis(){
   if (!items.length){ K.innerHTML = ''; return; }
   let tq = 0, full = 0, part = 0;
   items.forEach(it => { tq += it.qty; full += Math.floor(it.qty / size); if (it.qty % size) part++; });
-  const cards = [['Articole', items.length, ''], ['Piese totale', tq, ''], ['Bancali pieni', full, ''], ['Bancali incompleți', part, 'am'], ['Total bancali', full + part, 'hl']];
+  const cards = [['Articoli', items.length, ''], ['Pezzi totali', tq, ''], ['Bancali pieni', full, ''], ['Bancali incompleti', part, 'am'], ['Totale bancali', full + part, 'hl']];
   K.innerHTML = cards.map(c => `<div class="kpi ${c[2]}"><b data-n="${c[1]}">0</b><small>${c[0]}</small></div>`).join('');
   K.querySelectorAll('b').forEach(b => {
     const to = +b.dataset.n, t0 = performance.now();
-    (function step(t){ const p = Math.min(1, (t - t0) / 650); b.textContent = Math.round(to * (1 - Math.pow(1 - p, 3))).toLocaleString('ro-RO'); if (p < 1) requestAnimationFrame(step); })(t0);
+    (function step(t){ const p = Math.min(1, (t - t0) / 650); b.textContent = Math.round(to * (1 - Math.pow(1 - p, 3))).toLocaleString('it-IT'); if (p < 1) requestAnimationFrame(step); })(t0);
   });
 }
 
 function renderScarico(){
   const size = state.pallet, items = sortItems(state.items);
-  let html = `<div class="fitbox"><table class="t"><thead><tr><th>Cod</th><th class="n">Qtà (pz)</th><th class="n">Bancali</th><th>Bancali – încercuiește la descărcare</th></tr></thead><tbody>`;
+  let html = `<div class="fitbox"><table class="t"><thead><tr><th>Codice</th><th class="n">Qtà (pz)</th><th class="n">Bancali</th><th>Bancali – cerchiare allo scarico</th></tr></thead><tbody>`;
   let tq = 0, tp = 0;
   for (const it of items){
     const p = pallets(it.qty, size);
@@ -493,7 +501,7 @@ function renderScarico(){
     html += `<tr><td class="code">${esc(it.code)}</td><td class="n">${it.qty}</td><td class="n">${p.length}</td><td><div class="sqs">` +
       p.map((q, i) => { const k = 's|' + it.code + '|' + i; return `<div class="sq${q !== size ? ' part' : ''}${tk(k)}" data-k="${esc(k)}">${q}</div>`; }).join('') + `</div></td></tr>`;
   }
-  html += `<tr class="tot"><td>TOTALE</td><td class="n">${tq}</td><td class="n">${tp}</td><td></td></tr></tbody></table></div>`;
+  html += `<tr class="tot"><td>TOTALI</td><td class="n">${tq}</td><td class="n">${tp}</td><td></td></tr></tbody></table></div>`;
   $('scaricoOut').innerHTML = html;
 }
 
@@ -514,11 +522,11 @@ function renderPicking(){
     for (let i = 0; i < K; i++){ const k = 'p|' + r.it.code + '|' + i; body += i < r.p.length ? `<td class="pq full${tk(k)}" data-k="${esc(k)}">${r.p[i]}</td>` : '<td class="pq"></td>'; }
     body += '</tr>';
   }
-  body += `<tr class="tot"><td colspan="3" class="r">TOTALE</td><td>${tq}</td><td>${tf}</td><td>${tpart}</td><td></td><td>${tp}</td><td class="ne" colspan="${K}"></td></tr>`;
+  body += `<tr class="tot"><td colspan="3" class="r">TOTALI</td><td>${tq}</td><td>${tf}</td><td>${tpart}</td><td></td><td>${tp}</td><td class="ne" colspan="${K}"></td></tr>`;
 
   const nums = Array.from({ length: K }, (_, i) => `<th>${i + 1}</th>`).join('');
   const sr = (lab, val, cls) => `<tr><td class="lab">${lab}</td><td class="val ${cls || ''}">${val}</td></tr>`;
-  const title = `SCARICO CONTAINER – Ordine di acquisto n. ${esc(state.order || '?')}` + (state.orderDate ? ' – ' + fmtRo(state.orderDate) : '');
+  const title = `SCARICO CONTAINER – Ordine di acquisto n. ${esc(state.order || '?')}` + (state.orderDate ? ' – ' + fmtIt(state.orderDate) : '');
 
   $('pickingOut').innerHTML = `<div class="pk-sheet fitbox">
     <div class="pk-title">${title}</div>
@@ -561,7 +569,7 @@ const lblHtml = (l, extra) => `<div class="lbl${extra || ''}" data-i="${l.i}">${
 
 function renderLabels(){
   const size = state.pallet, items = sortItems(state.items);
-  const date = fmtRo(state.labelDate || state.orderDate);
+  const date = fmtIt(state.labelDate || state.orderDate);
   labelsData = [];
   for (const it of items){
     const p = pallets(it.qty, size);
@@ -569,7 +577,7 @@ function renderLabels(){
   }
   if (selL >= labelsData.length) selL = 0;
   $('labelsOut').innerHTML = labelsData.map(l => lblHtml(l, l.i === selL ? ' sel' : '')).join('');
-  $('lblCount').textContent = labelsData.length + ' etichete';
+  $('lblCount').textContent = labelsData.length + ' etichette';
   renderLive();
 }
 function renderLive(){ const l = labelsData[selL]; $('lblLive').innerHTML = l ? lblHtml(l) : ''; }
@@ -580,6 +588,11 @@ function scheduleLabels(){
   lblRaf = requestAnimationFrame(() => { lblRaf = 0; if (state.items.length){ renderLabels(); if ($('pv').classList.contains('open') && pv.which === 'labels') pvRender(); } });
 }
 
+/* Dimensione stampa: in modalità Auto mostra la percentuale reale calcolata per A4 */
+function autoPct(){
+  if (!state.items.length || cur === 'labels') return 100;
+  return Math.round(autoFit(cur) * 100);
+}
 function syncCtl(){
   document.querySelectorAll('[data-lbl]').forEach(i => { i.value = state[i.dataset.lbl]; });
   document.querySelectorAll('.v-lblScale').forEach(e => e.textContent = state.lblScale + '%');
@@ -587,26 +600,28 @@ function syncCtl(){
   document.querySelectorAll('.v-lblY').forEach(e => e.textContent = state.lblY);
   document.querySelectorAll('.v-thumb').forEach(e => e.textContent = state.thumb + 'px');
   document.documentElement.style.setProperty('--lw', state.thumb + 'px');
-  document.querySelectorAll('.tz').forEach(i => i.value = state.tblZoom || 100);
-  document.querySelectorAll('.tzv').forEach(e => e.textContent = state.tblZoom ? state.tblZoom + '%' : 'Auto');
+  const z = state.tblZoom || autoPct();
+  document.querySelectorAll('.tz').forEach(i => i.value = z);
+  document.querySelectorAll('.tzv').forEach(e => e.textContent = z + '%');
+  document.querySelectorAll('[data-act="tzauto"]').forEach(b => b.classList.toggle('on', !state.tblZoom));
 }
 
 function renderAll(){
   const has = state.items.length > 0;
   $('meta').textContent = has
-    ? `Ordine ${state.order || '?'} · ${fmtRo(state.orderDate)} · ${state.items.length} articole · ${state.fileName}`
-    : 'Niciun fișier încărcat';
+    ? `Ordine ${state.order || '?'} · ${fmtIt(state.orderDate)} · ${state.items.length} articoli · ${state.fileName}`
+    : 'Nessun file caricato';
   $('pallet').value = state.pallet;
   $('ldate').value = state.labelDate || state.orderDate || '';
   document.querySelectorAll('.bar .btn,.fab-item button:not([data-act=load])').forEach(b => b.disabled = !has);
-  syncCtl();
   if (!has){
-    const e = '<div class="empty" data-act="load"><div class="ic">' + icon('up') + '</div><b>Încarcă ordinul de achiziție</b><span>Apasă aici sau trage fișierul xlsx oriunde pe pagină.</span></div>';
+    const e = '<div class="empty" data-act="load"><div class="ic">' + icon('up') + '</div><b>Carica l’ordine di acquisto</b><span>Clicca qui o trascina il file xlsx ovunque nella pagina.</span></div>';
     $('scaricoOut').innerHTML = e; $('pickingOut').innerHTML = e; $('labelsOut').innerHTML = ''; $('lblLive').innerHTML = ''; $('lblCount').textContent = '';
-    renderKpis();
+    renderKpis(); syncCtl();
     return;
   }
   renderKpis(); renderScarico(); renderPicking(); renderLabels();
+  syncCtl();
 }
 
 /* ---------- Excel ---------- */
@@ -615,13 +630,13 @@ function downloadXlsx(kind){
   let aoa;
   if (kind === 'scarico'){
     const maxP = Math.max(...items.map(it => pallets(it.qty, size).length));
-    aoa = [['Cod', 'Qtà (pz)', 'Bancali', ...Array.from({length:maxP}, (_, i) => 'Bancale ' + (i + 1))]];
+    aoa = [['Codice', 'Qtà (pz)', 'Bancali', ...Array.from({length:maxP}, (_, i) => 'Bancale ' + (i + 1))]];
     items.forEach(it => { const p = pallets(it.qty, size); aoa.push([shortCode(it.code), it.qty, p.length, ...p]); });
-    aoa.push(['TOTALE', items.reduce((s, i) => s + i.qty, 0), items.reduce((s, i) => s + pallets(i.qty, size).length, 0)]);
+    aoa.push(['TOTALI', items.reduce((s, i) => s + i.qty, 0), items.reduce((s, i) => s + pallets(i.qty, size).length, 0)]);
   } else {
-    aoa = [['Cod', 'Descrizione', 'Ubicazione', 'Qtà (pz)', 'Bancali', 'Compoziție']];
+    aoa = [['Codice', 'Descrizione', 'Ubicazione', 'Qtà (pz)', 'Bancali', 'Composizione']];
     items.forEach(it => { const p = pallets(it.qty, size); aoa.push([shortCode(it.code), it.desc, it.loc, it.qty, p.length, palletText(p, size)]); });
-    aoa.push(['TOTALE', '', '', items.reduce((s, i) => s + i.qty, 0), items.reduce((s, i) => s + pallets(i.qty, size).length, 0)]);
+    aoa.push(['TOTALI', '', '', items.reduce((s, i) => s + i.qty, 0), items.reduce((s, i) => s + pallets(i.qty, size).length, 0)]);
   }
   const ws = XLSX.utils.aoa_to_sheet(aoa);
   ws['!cols'] = aoa[0].map((_, c) => ({ wch: Math.min(45, Math.max(...aoa.map(r => String(r[c] ?? '').length)) + 2) }));
@@ -630,31 +645,37 @@ function downloadXlsx(kind){
   XLSX.writeFile(wb, (kind === 'scarico' ? 'Scarico_' : 'Picking_') + (state.order || 'ordine') + '.xlsx');
 }
 
-/* ---------- Potrivire pe A4: mărește tabelul cât permite foaia ---------- */
-function computeFit(which){
-  const root = document.documentElement;
-  root.style.setProperty('--fit', 1);
-  if (which === 'labels') return 1;
-  if (state.tblZoom > 0){ const f = state.tblZoom / 100; root.style.setProperty('--fit', f); return f; }
+/* ---------- Adattamento automatico su A4 (landscape, margini 10mm) ---------- */
+function autoFit(which){
   const src = { scarico:'scaricoOut', picking:'pickingOut' }[which];
+  if (!src) return 1;
   const m = document.createElement('div');
+  m.className = 'meas';
   m.style.cssText = 'position:absolute;left:-9999px;top:0;visibility:hidden;width:277mm;';
   m.innerHTML = $(src).innerHTML;
   document.body.appendChild(m);
   const b = m.querySelector('.fitbox');
-  const avail = 190 * 96 / 25.4 * 0.965;
-  let lo = 0.5, hi = 2.2;
-  for (let i = 0; i < 14; i++){
-    const mid = (lo + hi) / 2;
-    b.style.zoom = mid;
-    if (b.offsetHeight > avail) hi = mid; else lo = mid;
+  let lo = 0.5;
+  if (b){
+    const avail = 190 * 96 / 25.4 * 0.965;
+    let hi = 2.2;
+    for (let i = 0; i < 14; i++){
+      const mid = (lo + hi) / 2;
+      b.style.zoom = mid;
+      if (b.offsetHeight > avail) hi = mid; else lo = mid;
+    }
   }
   m.remove();
-  root.style.setProperty('--fit', lo.toFixed(3));
   return lo;
 }
+function computeFit(which){
+  let f = 1;
+  if (which !== 'labels') f = state.tblZoom > 0 ? state.tblZoom / 100 : autoFit(which);
+  document.documentElement.style.setProperty('--fit', f.toFixed(3));
+  return f;
+}
 
-/* ---------- Print ---------- */
+/* ---------- Stampa ---------- */
 function printSection(which){
   computeFit(which);
   let st = document.getElementById('pageStyle');
@@ -664,9 +685,9 @@ function printSection(which){
   setTimeout(() => { window.print(); setTimeout(() => { delete document.body.dataset.print; }, 300); }, 50);
 }
 
-/* ---------- Previzualizare ---------- */
+/* ---------- Anteprima ---------- */
 const pv = { which:'', page:0, pages:[], zoom:1, k:1 };
-const TITLES = { scarico:'Scarico (camion)', picking:'Picking', labels:'Etichete' };
+const TITLES = { scarico:'Scarico (camion)', picking:'Picking', labels:'Etichette' };
 
 function openPreview(which){
   pv.which = which; pv.page = 0; pv.zoom = 1;
@@ -685,7 +706,7 @@ function pvRender(){
   paper.innerHTML = pv.pages[pv.page] || '';
   paper.style.transform = 'none';
   const w = paper.offsetWidth, h = paper.offsetHeight, st = $('pvStage');
-  pv.k = Math.min((st.clientWidth - 48) / w, (st.clientHeight - 48) / h) * pv.zoom;
+  pv.k = Math.min((st.clientWidth - 40) / w, (st.clientHeight - 40) / h) * pv.zoom;
   paper.style.transform = `scale(${pv.k})`;
   $('pvWrap').style.width = w * pv.k + 'px';
   $('pvWrap').style.height = h * pv.k + 'px';
@@ -712,7 +733,7 @@ document.addEventListener('keydown', e => {
   else if (pv.which === 'labels' && e.target.tagName !== 'INPUT'){ if (e.key === 'ArrowRight') pvGo(1); if (e.key === 'ArrowLeft') pvGo(-1); }
 });
 
-/* ---------- Tab-uri ---------- */
+/* ---------- Schede ---------- */
 function moveInd(){
   const b = document.querySelector('#seg button.active'), i = $('ind');
   if (!b) return;
@@ -721,12 +742,13 @@ function moveInd(){
 }
 document.querySelectorAll('#seg button').forEach(b => b.addEventListener('click', () => {
   cur = b.dataset.tab;
+  document.body.dataset.tab = cur;
   document.querySelectorAll('#seg button').forEach(x => x.classList.toggle('active', x === b));
   document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'p-' + cur));
-  moveInd();
+  moveInd(); syncCtl();
 }));
 
-/* ---------- Acțiuni ---------- */
+/* ---------- Azioni ---------- */
 $('fabMain').addEventListener('click', () => $('fab').classList.toggle('open'));
 
 document.addEventListener('click', e => {
@@ -751,7 +773,7 @@ document.addEventListener('click', e => {
   else if (act === 'preview') openPreview(cur);
   else if (act === 'print') printSection(cur);
   else if (act === 'xlsx') downloadXlsx(cur === 'scarico' ? 'scarico' : 'picking');
-  else if (act === 'resetticks'){ state.ticks = {}; save(); renderScarico(); renderPicking(); toast('Bifările au fost șterse'); }
+  else if (act === 'resetticks'){ state.ticks = {}; save(); renderScarico(); renderPicking(); toast('Spunte cancellate'); }
   else if (act === 'tzauto'){ state.tblZoom = 0; save(); syncCtl(); }
   else if (act === 'lblreset'){ state.lblScale = 100; state.lblX = 0; state.lblY = 0; save(); syncCtl(); scheduleLabels(); }
 });
@@ -782,6 +804,7 @@ window.addEventListener('dragover', e => e.preventDefault());
 window.addEventListener('drop', e => { e.preventDefault(); dragN = 0; $('drop').classList.remove('show'); handleFile(e.dataTransfer.files[0]); });
 
 load();
+document.body.dataset.tab = cur;
 renderAll();
 moveInd();
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(moveInd);
