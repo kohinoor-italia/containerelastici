@@ -44,9 +44,22 @@
   .lbl svg{ width:100%; height:100%; display:block; }
   .hint{ font-size:13px; color:#555; margin:0 0 12px; }
 
+  /* ---------- Previzualizare ---------- */
+  .pv{ position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:50; display:none; flex-direction:column; }
+  .pv.open{ display:flex; }
+  .pv-top{ background:#fff; padding:10px 16px; display:flex; gap:8px; align-items:center; border-bottom:1px solid var(--line); }
+  .pv-body{ flex:1; overflow:auto; padding:16px; }
+  .pv-paper{ background:#fff; margin:0 auto; box-shadow:0 2px 12px rgba(0,0,0,.4); }
+  .pv-paper.land{ width:297mm; padding:10mm; }
+  .pv-paper.port{ width:210mm; padding:8mm; }
+  .pv-paper table.t{ font-size:13px; }
+  .pv-paper .labels{ gap:0; justify-content:center; }
+  .pv-paper .lbl{ width:92mm; border:0; }
+
   @media print{
     body{ background:#fff; }
     header, nav, .bar, .hint, .noprint{ display:none !important; }
+    .pv{ display:none !important; }
     main{ margin:0; border:0; padding:0; min-height:0; }
     .panel, .panel.active{ display:none; }
     body[data-print="scarico"] #p-scarico,
@@ -84,7 +97,7 @@
   <section class="panel active" id="p-scarico">
     <div class="bar">
       <button class="btn" data-act="xlsx-scarico">Descarcă Excel</button>
-      <button class="btn sec" data-act="print-scarico">Salvează PDF / Printează</button>
+      <button class="btn sec" data-act="print-scarico">Previzualizare PDF</button>
     </div>
     <p class="hint">Apasă pe un pătrat ca să-l încercuiești pe ecran (pe hârtie se încercuiește cu pixul).</p>
     <div id="scaricoOut"></div>
@@ -93,20 +106,28 @@
   <section class="panel" id="p-picking">
     <div class="bar">
       <button class="btn" data-act="xlsx-picking">Descarcă Excel</button>
-      <button class="btn sec" data-act="print-picking">Salvează PDF / Printează</button>
+      <button class="btn sec" data-act="print-picking">Previzualizare PDF</button>
     </div>
     <div id="pickingOut"></div>
   </section>
 
   <section class="panel" id="p-labels">
     <div class="bar">
-      <button class="btn" data-act="print-labels">Salvează PDF / Printează etichete</button>
+      <button class="btn" data-act="print-labels">Previzualizare PDF etichete</button>
       <span class="meta" id="lblCount"></span>
     </div>
     <p class="hint">Linia neagră groasă de jos = ultima etichetă a unui cod (aici rupi). Se xeroxează toată foaia.</p>
     <div class="labels" id="labelsOut"></div>
   </section>
 </main>
+
+<div class="pv" id="pv">
+  <div class="pv-top">
+    <button class="btn" id="pvPrint">Printează / Salvează PDF</button>
+    <button class="btn sec" id="pvClose">Închide</button>
+  </div>
+  <div class="pv-body" id="pvBody"><div class="pv-paper" id="pvPaper"></div></div>
+</div>
 
 <script>
 /* ---------- Code128 (set B) ---------- */
@@ -201,13 +222,11 @@ function parseWorkbook(buf, name){
     const next = rows[i + 1] || [];
     let qty = next[H.c_MVQTAMOV];
     if (typeof qty !== 'number') qty = Math.round(Number(r[H.c_MVQTAMOV]) || 0);
-    const eanRaw = H.c_MVDESSUP !== undefined ? next[H.c_MVDESSUP] : '';
     items.push({
       code: code.trim(),
       desc: String(r[H.MVDESSUP] || '').replace(/\s+/g, ' ').trim(),
       loc: String(r[H.ITCODUBI] || '').trim(),
-      qty: Math.round(qty),
-      ean: typeof eanRaw === 'string' ? eanRaw.replace(/EAN CODE/i, '').trim() : ''
+      qty: Math.round(qty)
     });
   }
   if (!items.length) throw new Error('Nu am găsit articole în fișier.');
@@ -240,14 +259,14 @@ function renderScarico(){
 
 function renderPicking(){
   const size = state.pallet, items = sortItems(state.items);
-  let html = `<table class="t"><thead><tr><th>Cod</th><th>Descrizione</th><th>Ubicazione</th><th class="n">Qtà (pz)</th><th class="n">Bancali</th><th>Compoziție</th><th>EAN</th><th>✓</th></tr></thead><tbody>`;
+  let html = `<table class="t"><thead><tr><th>Cod</th><th>Descrizione</th><th>Ubicazione</th><th class="n">Qtà (pz)</th><th class="n">Bancali</th><th>Compoziție</th><th>✓</th></tr></thead><tbody>`;
   let tq = 0, tp = 0;
   for (const it of items){
     const p = pallets(it.qty, size);
     tq += it.qty; tp += p.length;
-    html += `<tr><td class="code">${esc(shortCode(it.code))}</td><td>${esc(it.desc)}</td><td><b>${esc(it.loc)}</b></td><td class="n">${it.qty}</td><td class="n">${p.length}</td><td>${esc(palletText(p, size))}</td><td>${esc(it.ean)}</td><td><span class="chk"></span></td></tr>`;
+    html += `<tr><td class="code">${esc(shortCode(it.code))}</td><td>${esc(it.desc)}</td><td><b>${esc(it.loc)}</b></td><td class="n">${it.qty}</td><td class="n">${p.length}</td><td>${esc(palletText(p, size))}</td><td><span class="chk"></span></td></tr>`;
   }
-  html += `<tr class="tot"><td colspan="3">TOTALE</td><td class="n">${tq}</td><td class="n">${tp}</td><td colspan="3"></td></tr></tbody></table>`;
+  html += `<tr class="tot"><td colspan="3">TOTALE</td><td class="n">${tq}</td><td class="n">${tp}</td><td colspan="2"></td></tr></tbody></table>`;
   $('pickingOut').innerHTML = html;
 }
 
@@ -306,8 +325,8 @@ function downloadXlsx(kind){
     items.forEach(it => { const p = pallets(it.qty, size); aoa.push([shortCode(it.code), it.qty, p.length, ...p]); });
     aoa.push(['TOTALE', items.reduce((s, i) => s + i.qty, 0), items.reduce((s, i) => s + pallets(i.qty, size).length, 0)]);
   } else {
-    aoa = [['Cod', 'Descrizione', 'Ubicazione', 'Qtà (pz)', 'Bancali', 'Compoziție', 'EAN']];
-    items.forEach(it => { const p = pallets(it.qty, size); aoa.push([shortCode(it.code), it.desc, it.loc, it.qty, p.length, palletText(p, size), it.ean]); });
+    aoa = [['Cod', 'Descrizione', 'Ubicazione', 'Qtà (pz)', 'Bancali', 'Compoziție']];
+    items.forEach(it => { const p = pallets(it.qty, size); aoa.push([shortCode(it.code), it.desc, it.loc, it.qty, p.length, palletText(p, size)]); });
     aoa.push(['TOTALE', '', '', items.reduce((s, i) => s + i.qty, 0), items.reduce((s, i) => s + pallets(i.qty, size).length, 0)]);
   }
   const ws = XLSX.utils.aoa_to_sheet(aoa);
@@ -331,6 +350,27 @@ function printSection(which){
   }, 50);
 }
 
+/* ---------- Previzualizare ---------- */
+let pvWhich = '';
+function openPreview(which){
+  pvWhich = which;
+  const src = { scarico:'scaricoOut', picking:'pickingOut', labels:'labelsOut' }[which];
+  const paper = $('pvPaper');
+  paper.style.zoom = 1;
+  paper.className = 'pv-paper ' + (which === 'labels' ? 'port' : 'land');
+  paper.innerHTML = which === 'labels'
+    ? '<div class="labels">' + $(src).innerHTML + '</div>'
+    : $(src).innerHTML;
+  $('pv').classList.add('open');
+  const fit = ($('pvBody').clientWidth - 32) / paper.offsetWidth;
+  paper.style.zoom = Math.min(1, fit);
+  $('pvBody').scrollTop = 0;
+}
+function closePreview(){ $('pv').classList.remove('open'); }
+$('pvClose').addEventListener('click', closePreview);
+$('pvPrint').addEventListener('click', () => printSection(pvWhich));
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closePreview(); });
+
 /* ---------- Evenimente ---------- */
 document.querySelectorAll('nav button').forEach(b => b.addEventListener('click', () => {
   document.querySelectorAll('nav button').forEach(x => x.classList.toggle('active', x === b));
@@ -344,7 +384,7 @@ document.addEventListener('click', e => {
   if (!a) return;
   const act = a.dataset.act;
   if (act.startsWith('xlsx-')) downloadXlsx(act.slice(5));
-  else if (act.startsWith('print-')) printSection(act.slice(6));
+  else if (act.startsWith('print-')) openPreview(act.slice(6));
 });
 
 $('btnLoad').addEventListener('click', () => $('file').click());
