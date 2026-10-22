@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scarico elastici</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  :root{ --lw:240px; --ink:#111; --line:#cfd4da; --accent:#0b6e4f; --bg:#f3f5f7; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; font-family:Arial,Helvetica,sans-serif; background:var(--bg); color:var(--ink); }
+  header{ background:#fff; border-bottom:1px solid var(--line); padding:12px 16px; display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
+  header h1{ font-size:18px; margin:0 12px 0 0; }
+  .btn{ background:var(--accent); color:#fff; border:0; border-radius:6px; padding:8px 14px; font-size:14px; cursor:pointer; }
+  .btn.sec{ background:#fff; color:var(--accent); border:1px solid var(--accent); }
+  .btn:disabled{ opacity:.4; cursor:default; }
+  .meta{ font-size:13px; color:#555; }
+  .opts{ display:flex; gap:14px; align-items:center; flex-wrap:wrap; font-size:13px; }
+  .opts input{ padding:5px 6px; font-size:14px; border:1px solid var(--line); border-radius:5px; }
+  .opts input[type=number]{ width:70px; }
+  nav{ display:flex; gap:4px; padding:10px 16px 0; }
+  nav button{ border:1px solid var(--line); border-bottom:0; background:#e7eaee; padding:9px 16px; border-radius:8px 8px 0 0; font-size:14px; cursor:pointer; }
+  nav button.active{ background:#fff; font-weight:700; }
+  main{ background:#fff; margin:0 16px 24px; border:1px solid var(--line); padding:16px; min-height:300px; }
+  .panel{ display:none; }
+  .panel.active{ display:block; }
+  .bar{ display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; align-items:center; }
+  .empty{ padding:40px 10px; text-align:center; color:#777; }
+
+  table.t{ border-collapse:collapse; width:100%; font-size:15px; }
+  table.t th, table.t td{ border:1px solid #333; padding:7px 9px; text-align:left; vertical-align:middle; }
+  table.t th{ background:#e9eef0; }
+  table.t td.n, table.t th.n{ text-align:right; }
+  table.t tr.tot td{ font-weight:700; background:#f2f2f2; }
+  .code{ font-weight:700; font-size:17px; white-space:nowrap; }
+  .sqs{ display:flex; gap:10px; flex-wrap:wrap; }
+  .sq{ width:58px; height:58px; border:2px solid #111; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:700; cursor:pointer; user-select:none; }
+  .sq.part{ border-style:dashed; }
+  .sq.on{ border-radius:50%; background:#d9f5e8; border-color:#0b6e4f; }
+  .chk{ width:26px; height:26px; border:2px solid #111; display:inline-block; }
+
+  .labels{ display:flex; flex-wrap:wrap; gap:14px; }
+  .lbl{ width:var(--lw); aspect-ratio:496/751; border:1px dashed #aaa; background:#fff; }
+  .lbl svg{ width:100%; height:100%; display:block; }
+  .hint{ font-size:13px; color:#555; margin:0 0 12px; }
+
+  @media print{
+    body{ background:#fff; }
+    header, nav, .bar, .hint, .noprint{ display:none !important; }
+    main{ margin:0; border:0; padding:0; min-height:0; }
+    .panel, .panel.active{ display:none; }
+    body[data-print="scarico"] #p-scarico,
+    body[data-print="picking"] #p-picking,
+    body[data-print="labels"] #p-labels{ display:block; }
+    .sq.on{ border-radius:0; background:none; border-color:#111; }
+    :root{ --lw:92mm; }
+    .labels{ gap:0; justify-content:center; }
+    .lbl{ border:0; break-inside:avoid; page-break-inside:avoid; }
+    table.t{ font-size:13px; }
+    table.t tr{ break-inside:avoid; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Scarico elastici</h1>
+  <button class="btn" id="btnLoad">Încarcă xlsx (ordine de achiziție)</button>
+  <input type="file" id="file" accept=".xlsx,.xls" hidden>
+  <span class="meta" id="meta">Niciun fișier încărcat.</span>
+  <div class="opts">
+    <label>Pz / bancal <input type="number" id="pallet" min="1" value="320"></label>
+    <label>Data etichetă <input type="date" id="ldate"></label>
+  </div>
+</header>
+
+<nav>
+  <button data-tab="scarico" class="active">Scarico (camion)</button>
+  <button data-tab="picking">Picking</button>
+  <button data-tab="labels">Etichete</button>
+</nav>
+
+<main>
+  <section class="panel active" id="p-scarico">
+    <div class="bar">
+      <button class="btn" data-act="xlsx-scarico">Descarcă Excel</button>
+      <button class="btn sec" data-act="print-scarico">Salvează PDF / Printează</button>
+    </div>
+    <p class="hint">Apasă pe un pătrat ca să-l încercuiești pe ecran (pe hârtie se încercuiește cu pixul).</p>
+    <div id="scaricoOut"></div>
+  </section>
+
+  <section class="panel" id="p-picking">
+    <div class="bar">
+      <button class="btn" data-act="xlsx-picking">Descarcă Excel</button>
+      <button class="btn sec" data-act="print-picking">Salvează PDF / Printează</button>
+    </div>
+    <div id="pickingOut"></div>
+  </section>
+
+  <section class="panel" id="p-labels">
+    <div class="bar">
+      <button class="btn" data-act="print-labels">Salvează PDF / Printează etichete</button>
+      <span class="meta" id="lblCount"></span>
+    </div>
+    <p class="hint">Linia neagră groasă de jos = ultima etichetă a unui cod (aici rupi). Se xeroxează toată foaia.</p>
+    <div class="labels" id="labelsOut"></div>
+  </section>
+</main>
+
+<script>
+/* ---------- Code128 (set B) ---------- */
+const C128 = ['212222','222122','222221','121223','121322','131222','122213','122312','132212','221213','221312','231212','112232','122132','122231','113222','123122','123221','223211','221132','221231','213212','223112','312131','311222','321122','321221','312212','322112','322211','212123','212321','232121','111323','131123','131321','112313','132113','132311','211313','231113','231311','112133','112331','132131','113123','113321','133121','313121','211331','231131','213113','213311','213131','311123','311321','331121','312113','312311','332111','314111','221411','431111','111224','111422','121124','121421','141122','141221','112214','112412','122114','122411','142112','142211','241211','221114','413111','241112','134111','111242','121142','121241','114212','124112','124211','411212','421112','421211','212141','214121','412121','111143','111341','131141','114113','114311','411113','411311','113141','114131','311141','411131','211412','211214','211232','2331112'];
+
+function barcodeSvg(text, x, y, w, h){
+  const vals = [104];
+  for (const ch of text) vals.push(ch.charCodeAt(0) - 32);
+  let sum = 104;
+  for (let i = 1; i < vals.length; i++) sum += vals[i] * i;
+  vals.push(sum % 103);
+  vals.push(106);
+  const pat = vals.map(v => C128[v]).join('');
+  let total = 0;
+  for (const d of pat) total += +d;
+  const u = w / total;
+  let cx = x, out = '', bar = true;
+  for (const d of pat){
+    const wd = +d * u;
+    if (bar) out += `<rect x="${cx.toFixed(2)}" y="${y}" width="${wd.toFixed(2)}" height="${h}" fill="#000"/>`;
+    cx += wd; bar = !bar;
+  }
+  return out;
+}
+
+/* ---------- Date ---------- */
+const $ = id => document.getElementById(id);
+const LS = 'scarico_elastici_v1';
+let state = { items:[], order:'', orderDate:'', fileName:'', loadedAt:'', pallet:320, labelDate:'' };
+
+function save(){ try{ localStorage.setItem(LS, JSON.stringify(state)); }catch(e){ console.warn('localStorage indisponibil', e); } }
+function load(){ try{ const s = localStorage.getItem(LS); if (s) state = Object.assign(state, JSON.parse(s)); }catch(e){} }
+
+const shortCode = c => c.replace(/^Y525/, '');
+
+function sortKey(item){
+  const s = shortCode(item.code);
+  const g = s[0] === 'G' ? 0 : (s[0] === 'P' ? 1 : 2);
+  const m = s.match(/^[A-Z]+(\d+)/);
+  return [g, m ? parseInt(m[1], 10) : 0, s];
+}
+function sortItems(a){
+  return a.slice().sort((x, y) => {
+    const kx = sortKey(x), ky = sortKey(y);
+    return (kx[0] - ky[0]) || (kx[1] - ky[1]) || kx[2].localeCompare(ky[2]);
+  });
+}
+
+function pallets(qty, size){
+  const arr = [];
+  const full = Math.floor(qty / size), rem = qty % size;
+  for (let i = 0; i < full; i++) arr.push(size);
+  if (rem > 0) arr.push(rem);
+  return arr;
+}
+const palletText = (arr, size) => {
+  const full = arr.filter(q => q === size).length;
+  const part = arr.filter(q => q !== size);
+  const t = [];
+  if (full) t.push(full + '×' + size);
+  if (part.length) t.push('1×' + part[0]);
+  return t.join(' + ');
+};
+
+/* ---------- Parsare xlsx ---------- */
+function fmtDate(v){
+  let d = null;
+  if (v instanceof Date) d = new Date(v.getTime() + 12 * 3600 * 1000);
+  else if (typeof v === 'number'){ const p = XLSX.SSF.parse_date_code(v); if (p) d = new Date(Date.UTC(p.y, p.m - 1, p.d, 12)); }
+  if (!d || isNaN(d)) return '';
+  return d.getUTCFullYear() + '-' + String(d.getUTCMonth() + 1).padStart(2, '0') + '-' + String(d.getUTCDate()).padStart(2, '0');
+}
+
+function parseWorkbook(buf, name){
+  const wb = XLSX.read(buf, { type:'array', cellDates:true });
+  const ws = wb.Sheets[wb.SheetNames[0]];
+  const rows = XLSX.utils.sheet_to_json(ws, { header:1, raw:true, defval:null });
+  const H = {};
+  (rows[0] || []).forEach((h, i) => { if (typeof h === 'string') H[h.trim()] = i; });
+  const need = ['CACODIC2', 'ITCODUBI', 'MVDESSUP', 'c_MVQTAMOV'];
+  for (const n of need) if (H[n] === undefined) throw new Error('Coloana "' + n + '" lipsește din fișier.');
+
+  const items = [];
+  let order = '', orderDate = '';
+  for (let i = 1; i < rows.length; i++){
+    const r = rows[i];
+    if (!r) continue;
+    if (!order && H.c_MVNUMDOC_TS !== undefined && r[H.c_MVNUMDOC_TS]) order = String(r[H.c_MVNUMDOC_TS]).trim();
+    if (!orderDate && H.c_MVDATDOC !== undefined && r[H.c_MVDATDOC]) orderDate = fmtDate(r[H.c_MVDATDOC]);
+    const code = r[H.CACODIC2];
+    if (typeof code !== 'string' || !code.trim() || code.trim() === '.') continue;
+    const next = rows[i + 1] || [];
+    let qty = next[H.c_MVQTAMOV];
+    if (typeof qty !== 'number') qty = Math.round(Number(r[H.c_MVQTAMOV]) || 0);
+    const eanRaw = H.c_MVDESSUP !== undefined ? next[H.c_MVDESSUP] : '';
+    items.push({
+      code: code.trim(),
+      desc: String(r[H.MVDESSUP] || '').replace(/\s+/g, ' ').trim(),
+      loc: String(r[H.ITCODUBI] || '').trim(),
+      qty: Math.round(qty),
+      ean: typeof eanRaw === 'string' ? eanRaw.replace(/EAN CODE/i, '').trim() : ''
+    });
+  }
+  if (!items.length) throw new Error('Nu am găsit articole în fișier.');
+  state.items = items;
+  state.order = order;
+  state.orderDate = orderDate;
+  state.labelDate = orderDate || state.labelDate;
+  state.fileName = name;
+  state.loadedAt = new Date().toLocaleString('ro-RO');
+  save();
+}
+
+/* ---------- Randare ---------- */
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function fmtRo(iso){ if (!iso) return ''; const [y, m, d] = iso.split('-'); return d + '/' + m + '/' + y; }
+
+function renderScarico(){
+  const size = state.pallet, items = sortItems(state.items);
+  let html = `<table class="t"><thead><tr><th>Cod</th><th class="n">Qtà (pz)</th><th class="n">Bancali</th><th>Bancali – încercuiește la descărcare</th></tr></thead><tbody>`;
+  let tq = 0, tp = 0;
+  for (const it of items){
+    const p = pallets(it.qty, size);
+    tq += it.qty; tp += p.length;
+    html += `<tr><td class="code">${esc(shortCode(it.code))}</td><td class="n">${it.qty}</td><td class="n">${p.length}</td><td><div class="sqs">` +
+      p.map(q => `<div class="sq${q !== size ? ' part' : ''}">${q}</div>`).join('') + `</div></td></tr>`;
+  }
+  html += `<tr class="tot"><td>TOTALE</td><td class="n">${tq}</td><td class="n">${tp}</td><td></td></tr></tbody></table>`;
+  $('scaricoOut').innerHTML = html;
+}
+
+function renderPicking(){
+  const size = state.pallet, items = sortItems(state.items);
+  let html = `<table class="t"><thead><tr><th>Cod</th><th>Descrizione</th><th>Ubicazione</th><th class="n">Qtà (pz)</th><th class="n">Bancali</th><th>Compoziție</th><th>EAN</th><th>✓</th></tr></thead><tbody>`;
+  let tq = 0, tp = 0;
+  for (const it of items){
+    const p = pallets(it.qty, size);
+    tq += it.qty; tp += p.length;
+    html += `<tr><td class="code">${esc(shortCode(it.code))}</td><td>${esc(it.desc)}</td><td><b>${esc(it.loc)}</b></td><td class="n">${it.qty}</td><td class="n">${p.length}</td><td>${esc(palletText(p, size))}</td><td>${esc(it.ean)}</td><td><span class="chk"></span></td></tr>`;
+  }
+  html += `<tr class="tot"><td colspan="3">TOTALE</td><td class="n">${tq}</td><td class="n">${tp}</td><td colspan="3"></td></tr></tbody></table>`;
+  $('pickingOut').innerHTML = html;
+}
+
+function labelSvg(code, qty, date, last){
+  return `<svg viewBox="0 0 496 751" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif" font-weight="700">
+<rect width="496" height="751" fill="#fff"/>
+${barcodeSvg(code, 40, 40, 416, 160)}
+<text x="248" y="275" font-size="64" text-anchor="middle" textLength="416" lengthAdjust="spacingAndGlyphs">${esc(code)}</text>
+<rect x="40" y="322" width="416" height="6" fill="#000"/>
+<text x="40" y="470" font-size="84" textLength="215" lengthAdjust="spacingAndGlyphs">QTA’:</text>
+${barcodeSvg(String(qty), 275, 370, 181, 100)}
+<text x="365" y="570" font-size="96" text-anchor="middle">${qty}</text>
+<text x="248" y="685" font-size="96" text-anchor="middle" textLength="416" lengthAdjust="spacingAndGlyphs">${esc(date)}</text>
+${last ? '<rect x="0" y="738" width="496" height="13" fill="#000"/>' : ''}
+</svg>`;
+}
+
+function renderLabels(){
+  const size = state.pallet, items = sortItems(state.items);
+  const date = fmtRo(state.labelDate || state.orderDate);
+  let html = '', n = 0;
+  for (const it of items){
+    const p = pallets(it.qty, size);
+    p.forEach((q, i) => {
+      html += `<div class="lbl">${labelSvg(it.code, q, date, i === p.length - 1)}</div>`;
+      n++;
+    });
+  }
+  $('labelsOut').innerHTML = html;
+  $('lblCount').textContent = n + ' etichete';
+}
+
+function renderAll(){
+  const has = state.items.length > 0;
+  $('meta').textContent = has
+    ? `Ordine ${state.order || '?'} · ${fmtRo(state.orderDate)} · ${state.items.length} articole · fișier: ${state.fileName} (încărcat ${state.loadedAt})`
+    : 'Niciun fișier încărcat.';
+  $('pallet').value = state.pallet;
+  $('ldate').value = state.labelDate || state.orderDate || '';
+  document.querySelectorAll('[data-act]').forEach(b => b.disabled = !has);
+  if (!has){
+    const e = '<div class="empty">Încarcă fișierul xlsx cu ordinul de achiziție.</div>';
+    $('scaricoOut').innerHTML = e; $('pickingOut').innerHTML = e; $('labelsOut').innerHTML = e; $('lblCount').textContent = '';
+    return;
+  }
+  renderScarico(); renderPicking(); renderLabels();
+}
+
+/* ---------- Descărcare Excel ---------- */
+function downloadXlsx(kind){
+  const size = state.pallet, items = sortItems(state.items);
+  let aoa;
+  if (kind === 'scarico'){
+    const maxP = Math.max(...items.map(it => pallets(it.qty, size).length));
+    aoa = [['Cod', 'Qtà (pz)', 'Bancali', ...Array.from({length:maxP}, (_, i) => 'Bancale ' + (i + 1))]];
+    items.forEach(it => { const p = pallets(it.qty, size); aoa.push([shortCode(it.code), it.qty, p.length, ...p]); });
+    aoa.push(['TOTALE', items.reduce((s, i) => s + i.qty, 0), items.reduce((s, i) => s + pallets(i.qty, size).length, 0)]);
+  } else {
+    aoa = [['Cod', 'Descrizione', 'Ubicazione', 'Qtà (pz)', 'Bancali', 'Compoziție', 'EAN']];
+    items.forEach(it => { const p = pallets(it.qty, size); aoa.push([shortCode(it.code), it.desc, it.loc, it.qty, p.length, palletText(p, size), it.ean]); });
+    aoa.push(['TOTALE', '', '', items.reduce((s, i) => s + i.qty, 0), items.reduce((s, i) => s + pallets(i.qty, size).length, 0)]);
+  }
+  const ws = XLSX.utils.aoa_to_sheet(aoa);
+  ws['!cols'] = aoa[0].map((_, c) => ({ wch: Math.min(45, Math.max(...aoa.map(r => String(r[c] ?? '').length)) + 2) }));
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, kind === 'scarico' ? 'Scarico' : 'Picking');
+  XLSX.writeFile(wb, (kind === 'scarico' ? 'Scarico_' : 'Picking_') + (state.order || 'ordine') + '.xlsx');
+}
+
+/* ---------- Print / PDF ---------- */
+function printSection(which){
+  let st = document.getElementById('pageStyle');
+  if (!st){ st = document.createElement('style'); st.id = 'pageStyle'; document.head.appendChild(st); }
+  st.textContent = which === 'labels'
+    ? '@page{ size:A4 portrait; margin:8mm; }'
+    : '@page{ size:A4 landscape; margin:10mm; }';
+  document.body.dataset.print = which;
+  setTimeout(() => {
+    window.print();
+    setTimeout(() => { delete document.body.dataset.print; }, 300);
+  }, 50);
+}
+
+/* ---------- Evenimente ---------- */
+document.querySelectorAll('nav button').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('nav button').forEach(x => x.classList.toggle('active', x === b));
+  document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'p-' + b.dataset.tab));
+}));
+
+document.addEventListener('click', e => {
+  const sq = e.target.closest('.sq');
+  if (sq){ sq.classList.toggle('on'); return; }
+  const a = e.target.closest('[data-act]');
+  if (!a) return;
+  const act = a.dataset.act;
+  if (act.startsWith('xlsx-')) downloadXlsx(act.slice(5));
+  else if (act.startsWith('print-')) printSection(act.slice(6));
+});
+
+$('btnLoad').addEventListener('click', () => $('file').click());
+$('file').addEventListener('change', e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  const rd = new FileReader();
+  rd.onload = () => {
+    try { parseWorkbook(rd.result, f.name); renderAll(); }
+    catch (err){ alert('Eroare la citirea fișierului: ' + err.message); }
+  };
+  rd.readAsArrayBuffer(f);
+  e.target.value = '';
+});
+
+$('pallet').addEventListener('change', e => {
+  const v = parseInt(e.target.value, 10);
+  if (v > 0){ state.pallet = v; save(); renderAll(); } else e.target.value = state.pallet;
+});
+$('ldate').addEventListener('change', e => { state.labelDate = e.target.value; save(); renderAll(); });
+
+load();
+renderAll();
+</script>
+</body>
+</html>
