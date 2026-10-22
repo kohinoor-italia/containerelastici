@@ -191,7 +191,10 @@ table.t.pk tr.tot td.ne{ background:transparent !important; border:0; }
 .tzpv.show{ display:flex; }
 .tzpv-info{ background:var(--ink); color:#fff; font-weight:800; font-size:13px; padding:5px 14px; border-radius:999px; box-shadow:0 6px 18px rgba(0,0,0,.35); }
 .tzpv-wrap{ border-radius:3px; box-shadow:0 0 0 6px rgba(7,24,24,.35); }
-.tzin{ background:repeating-linear-gradient(to bottom,transparent 0,transparent calc(190mm - 1.5px),#e5484d calc(190mm - 1.5px),#e5484d 190mm); }
+.tzin{ position:relative; }
+.tzbrk{ position:absolute; left:-10mm; right:-10mm; height:0; border-top:5px dashed #e5484d; z-index:5; pointer-events:none; }
+.tzbrk i{ position:absolute; right:10mm; top:6px; background:#e5484d; color:#fff; font:800 20px 'Manrope',sans-serif; font-style:normal; padding:3px 12px; border-radius:6px; }
+
 
 
 /* ---------- FAB ---------- */
@@ -812,9 +815,20 @@ function tzShow(){
   paper.style.transform = `scale(${k})`;
   wrap.style.width = w * k + 'px';
   wrap.style.height = h * k + 'px';
-  const pageH = 190 * 96 / 25.4;
-  const pages = Math.max(1, Math.ceil(paper.querySelector('.tzin').offsetHeight / pageH - 0.02));
+  const pageH = 190 * 96 / 25.4 * 0.95;
+  const tin = paper.querySelector('.tzin');
+  const base = tin.getBoundingClientRect().top;
+  let limit = pageH, pages = 1, marks = '';
+  tin.querySelectorAll('tbody tr').forEach(r => {
+    const b = r.getBoundingClientRect(), t = (b.top - base) / k, bt = (b.bottom - base) / k;
+    if (bt > limit + 0.5){
+      pages++; limit = t + pageH;
+      marks += `<div class="tzbrk" style="top:${t.toFixed(1)}px"><i>Pagina ${pages}</i></div>`;
+    }
+  });
+  tin.insertAdjacentHTML('beforeend', marks);
   $('tzInfo').textContent = 'Foi A4: ' + pages + ' · ' + state.tblZoom + '%';
+
 }
 function tzHide(){ clearTimeout(tzHideT); tzHideT = setTimeout(() => $('tzpv').classList.remove('show'), 700); }
 document.querySelectorAll('.tz').forEach(i => {
