@@ -186,6 +186,14 @@ table.t.pk tr.tot td.ne{ background:transparent !important; border:0; }
 .pv-paper .fitbox{ zoom:var(--fit,1); }
 .pv-paper .pk-sheet{ min-width:0; }
 
+/* ---------- Preview live dimensiune stampa ---------- */
+.tzpv{ position:fixed; left:50%; top:110px; transform:translateX(-50%); z-index:55; display:none; flex-direction:column; align-items:center; gap:6px; pointer-events:none; }
+.tzpv.show{ display:flex; }
+.tzpv-info{ background:var(--ink); color:#fff; font-weight:800; font-size:13px; padding:5px 14px; border-radius:999px; box-shadow:0 6px 18px rgba(0,0,0,.35); }
+.tzpv-wrap{ border-radius:3px; box-shadow:0 0 0 6px rgba(7,24,24,.35); }
+.tzin{ background:repeating-linear-gradient(to bottom,transparent 0,transparent calc(190mm - 1.5px),#e5484d calc(190mm - 1.5px),#e5484d 190mm); }
+
+
 /* ---------- FAB ---------- */
 .fabwrap{ position:fixed; right:20px; bottom:20px; z-index:40; display:flex; flex-direction:column; align-items:flex-end; gap:12px; }
 .fab-list{ display:flex; flex-direction:column; gap:8px; align-items:flex-end; }
@@ -327,6 +335,9 @@ table.t.pk tr.tot td.ne{ background:transparent !important; border:0; }
   </div>
   <div class="pv-stage" id="pvStage"><div class="pv-wrap" id="pvWrap"><div class="pv-paper" id="pvPaper"></div></div></div>
 </div>
+
+<div class="tzpv" id="tzpv"><div class="tzpv-info" id="tzInfo"></div><div class="tzpv-wrap" id="tzWrap"><div class="pv-paper land" id="tzPaper"></div></div></div>
+
 
 <div class="toast" id="toast"></div>
 <div class="drop" id="drop">Rilascia qui il file xlsx</div>
@@ -786,7 +797,35 @@ document.querySelectorAll('[data-lbl]').forEach(i => i.addEventListener('input',
   if (i.dataset.lbl === 'thumb') return;
   scheduleLabels();
 }));
-document.querySelectorAll('.tz').forEach(i => i.addEventListener('input', () => { state.tblZoom = +i.value; save(); syncCtl(); }));
+let tzRaf = 0, tzHideT = 0;
+function tzShow(){
+  if (cur === 'labels' || !state.items.length) return;
+  const src = { scarico:'scaricoOut', picking:'pickingOut' }[cur];
+  const paper = $('tzPaper'), wrap = $('tzWrap');
+  clearTimeout(tzHideT);
+  paper.style.setProperty('--fit', (state.tblZoom / 100).toFixed(3));
+  paper.innerHTML = '<div class="tzin">' + $(src).innerHTML + '</div>';
+  $('tzpv').classList.add('show');
+  paper.style.transform = 'none';
+  const w = paper.offsetWidth, h = paper.offsetHeight;
+  const k = Math.min(Math.min(innerWidth * 0.8, 1000) / w, innerHeight * 0.72 / h);
+  paper.style.transform = `scale(${k})`;
+  wrap.style.width = w * k + 'px';
+  wrap.style.height = h * k + 'px';
+  const pageH = 190 * 96 / 25.4;
+  const pages = Math.max(1, Math.ceil(paper.querySelector('.tzin').offsetHeight / pageH - 0.02));
+  $('tzInfo').textContent = 'Foi A4: ' + pages + ' · ' + state.tblZoom + '%';
+}
+function tzHide(){ clearTimeout(tzHideT); tzHideT = setTimeout(() => $('tzpv').classList.remove('show'), 700); }
+document.querySelectorAll('.tz').forEach(i => {
+  i.addEventListener('input', () => {
+    state.tblZoom = +i.value; save(); syncCtl();
+    if (!tzRaf) tzRaf = requestAnimationFrame(() => { tzRaf = 0; tzShow(); });
+  });
+  i.addEventListener('change', tzHide);
+  i.addEventListener('pointerup', tzHide);
+});
+
 
 document.querySelectorAll('[data-st]').forEach(b => b.addEventListener('click', () => {
   const v = Math.max(1, state.pallet + +b.dataset.st); state.pallet = v; save(); renderAll();
