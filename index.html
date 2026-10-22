@@ -19,8 +19,9 @@
 /* dimensiuni "de tipar" – folosite la print, la previzualizare și la calculul auto-A4 */
 @media print{ :root{ --tfs:13px; --tpy:6px; --tpx:10px; --sqw:56px; --sqh:42px; --sqf:14px; --cfs:16px; --pkh:30pt; } }
 .meas,.pv-paper{ --tfs:13px; --tpy:6px; --tpx:10px; --sqw:56px; --sqh:42px; --sqf:14px; --cfs:16px; --pkh:30pt; }
-.meas #scaricoOut .code,.pv-paper .code{ font-size:20px; }
-.meas #scaricoOut td.n,.pv-paper table.t:not(.pk) td.n{ font-size:17px; font-weight:800; }
+.meas .code,.pv-paper .code{ font-size:20px; }
+.meas table.t:not(.pk) td.n,.pv-paper table.t:not(.pk) td.n{ font-size:17px; font-weight:800; }
+
 
 
 *{ box-sizing:border-box; }
@@ -614,7 +615,8 @@ function scheduleLabels(){
 /* Dimensione stampa: in modalità Auto mostra la percentuale reale calcolata per A4 */
 function autoPct(){
   if (!state.items.length || cur === 'labels') return 100;
-  return Math.round(autoFit(cur) * 100);
+  return Math.floor(autoFit(cur) * 100);
+
 }
 function syncCtl(){
   document.querySelectorAll('[data-lbl]').forEach(i => { i.value = state[i.dataset.lbl]; });
@@ -678,7 +680,7 @@ function autoFit(which){
   m.innerHTML = $(src).innerHTML;
   document.body.appendChild(m);
   const b = m.querySelector('.fitbox');
-  const MIN = 0.4;                               /* minimul slider-ului: caută scara pt. 1 singură foaie */
+  const MIN = 0.4;                               /* minimo dello slider: cerca la scala per 1 solo foglio */
 
   let lo = MIN;
   if (b){
@@ -842,7 +844,7 @@ function tzShow(){
     }
   });
   tin.insertAdjacentHTML('beforeend', marks);
-  $('tzInfo').textContent = 'Foi A4: ' + pages + ' · ' + z + '%';
+  $('tzInfo').textContent = 'Fogli A4: ' + pages + ' · ' + z + '%';
 
 
 }
