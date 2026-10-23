@@ -129,25 +129,18 @@ table.t tr.tot td{ font-weight:800; background:#dff3ec !important; border-top:2p
 .sq{ min-width:var(--sqw); height:var(--sqh); padding:0 8px; border:2px solid #2b4a48; border-radius:10px; background:#fff; display:flex; align-items:center; justify-content:center; font-size:var(--sqf); font-weight:800; cursor:pointer; user-select:none; transition:border-radius .3s var(--ease),background .2s,transform .2s,box-shadow .2s; }
 .sq:hover{ transform:translateY(-2px); box-shadow:0 5px 12px rgba(12,43,44,.18); }
 .sq.part{
-  --dc:var(--amb);
   border-color:transparent; color:var(--amb); background-color:var(--ambl);
-  background-image:
-    repeating-linear-gradient(90deg,var(--dc) 0 7px,transparent 7px 12px),
-    repeating-linear-gradient(90deg,var(--dc) 0 7px,transparent 7px 12px),
-    repeating-linear-gradient(0deg,var(--dc) 0 7px,transparent 7px 12px),
-    repeating-linear-gradient(0deg,var(--dc) 0 7px,transparent 7px 12px);
-  background-size:100% 2px,100% 2px,2px 100%,2px 100%;
-
-  background-position:0 0,0 100%,0 0,100% 0;
-  background-repeat:no-repeat;
-  background-origin:border-box;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25'%3E%3Crect width='100%25' height='100%25' rx='10' ry='10' fill='none' stroke='%23e8730c' stroke-width='4' stroke-dasharray='9 6'/%3E%3C/svg%3E");
+  background-size:100% 100%; background-repeat:no-repeat; background-origin:border-box;
 }
+
 
 .sq.on{ border-radius:999px; background:var(--accl); border-color:var(--accd); color:var(--accd); animation:pop .35s var(--ease); }
 .sq.part.on{
-  --dc:var(--accd); color:var(--accd); background-color:var(--accl);
-  border-color:transparent;
+  color:var(--accd); background-color:var(--accl); border-color:transparent;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25'%3E%3Crect width='100%25' height='100%25' rx='16' ry='16' fill='none' stroke='%230b7a5f' stroke-width='4' stroke-dasharray='9 6'/%3E%3C/svg%3E");
 }
+
 
 @keyframes pop{ 40%{ transform:scale(1.18); } }
 
@@ -267,7 +260,11 @@ table.t.pk tr.tot td.ne{ background:transparent !important; border:0; }
   .sq,.sq.on{ transform:none; box-shadow:none; animation:none; }
   .sq{ border-radius:11px; }
   .sq.on{ border-radius:11px; background:#fff; border-color:#2b4a48; color:inherit; }
-  .sq.part,.sq.part.on{ --dc:#000; color:#000; background-color:#fff; border-color:transparent; }
+  .sq.part,.sq.part.on{
+    color:#000; background-color:#fff; border-color:transparent;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25'%3E%3Crect width='100%25' height='100%25' rx='11' ry='11' fill='none' stroke='%23000' stroke-width='4' stroke-dasharray='9 6'/%3E%3C/svg%3E");
+  }
+
 
 
   table.t thead{ display:table-header-group; }
