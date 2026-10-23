@@ -258,7 +258,8 @@ table.t.pk tr.tot td.ne{ background:transparent !important; border:0; }
   .labels{ display:block; }
   .lbl,.labels .lbl:hover{ width:195.49mm; height:296mm; aspect-ratio:auto; border:0; border-radius:0; margin:0 auto; transform:none; box-shadow:none; outline:0; break-after:page; page-break-after:always; }
   .lbl:last-child{ break-after:auto; page-break-after:auto; }
-  .lbl.sel,.labels .lbl.sel{ outline:0 !important; }
+   .lbl.sel,.labels .lbl.sel{ outline:0 !important; }
+  .labels .lbl[data-hide="1"]{ display:none !important; }
 
 }
 </style>
@@ -313,8 +314,11 @@ table.t.pk tr.tot td.ne{ background:transparent !important; border:0; }
     <div class="bar">
       <button class="btn" data-act="preview" data-ic="eye"> Anteprima</button>
       <button class="btn sec" data-act="print" data-ic="print"> Stampa</button>
+      <button class="btn gh" data-act="printone" data-ic="print"> Doar quella selezionata</button>
+      <div class="lblsearch"><input type="search" id="lblQ" placeholder="Cerca etichetta (cod)…" autocomplete="off"></div>
       <span class="chip" id="lblCount"></span>
     </div>
+
     <div class="lblwrap">
       <aside class="lbl-aside">
         <div class="live" id="lblLive"></div>
@@ -595,7 +599,8 @@ ${barcodeSvg(String(qty), 275, 370, 181, 100)}
 <text x="365" y="570" font-size="96" text-anchor="middle">${qty}</text>
 <text x="248" y="685" font-size="86" text-anchor="middle" textLength="416" lengthAdjust="spacingAndGlyphs">${esc(date)}</text>
 </g>
-${last ? `<rect x="${128 + state.lblX}" y="743" width="240" height="8" fill="#000"/>` : ''}
+${last ? `<g transform="translate(${state.lblX} 0)"><line x1="172" y1="745.5" x2="364" y2="745.5" stroke="#000" stroke-width="6" stroke-dasharray="12 8"/><g stroke="#000" stroke-width="2.2" stroke-linecap="round" fill="none"><circle cx="133" cy="742.7" r="2.8"/><circle cx="133" cy="748.3" r="2.8"/><line x1="135.5" y1="743.8" x2="165" y2="748"/><line x1="135.5" y1="747.2" x2="165" y2="743"/></g></g>` : ''}
+
 
 </svg>`;
 }
@@ -613,10 +618,14 @@ function renderLabels(){
     p.forEach((q, i) => labelsData.push({ i:labelsData.length, code:it.code, qty:q, date, last:i === p.length - 1, part:q !== size }));
   }
   if (selL >= labelsData.length) selL = 0;
-  $('labelsOut').innerHTML = labelsData.map(l => lblHtml(l, l.i === selL ? ' sel' : '')).join('');
-  $('lblCount').textContent = labelsData.length + ' etichette';
+  const q = ($('lblQ').value || '').trim().toLowerCase();
+  const vis = q ? labelsData.filter(l => l.code.toLowerCase().includes(q)) : labelsData;
+  if (q && vis.length && !vis.some(l => l.i === selL)) selL = vis[0].i;
+  $('labelsOut').innerHTML = vis.map(l => lblHtml(l, l.i === selL ? ' sel' : '')).join('');
+  $('lblCount').textContent = q ? (vis.length + ' / ' + labelsData.length + ' etichette') : (labelsData.length + ' etichette');
   renderLive();
 }
+
 function renderLive(){ const l = labelsData[selL]; $('lblLive').innerHTML = l ? lblHtml(l) : ''; }
 
 let lblRaf = 0;
@@ -729,6 +738,13 @@ function printSection(which){
   setTimeout(() => { window.print(); setTimeout(() => { delete document.body.dataset.print; }, 300); }, 50);
 }
 
+.lblsearch{ display:flex; gap:8px; align-items:center; flex:1 1 220px; min-width:180px; max-width:420px; }
+.lblsearch input{ flex:1; font:700 13px 'Manrope',sans-serif; color:var(--ink); background:#eef3f2; border:2px solid transparent; border-radius:10px; padding:7px 12px; outline:0; transition:.2s; }
+.lblsearch input:focus{ border-color:var(--acc); background:#fff; }
+@media print{ .lblsearch{ display:none !important; } }
+
+
+
 /* ---------- Anteprima ---------- */
 const pv = { which:'', page:0, pages:[], zoom:1, k:1 };
 const TITLES = { scarico:'Scarico (camion)', picking:'Picking', labels:'Etichette' };
@@ -737,7 +753,10 @@ function openPreview(which){
   pv.which = which; pv.page = 0; pv.zoom = 1;
   const land = which !== 'labels';
   computeFit(which);
-  pv.pages = land ? [$({ scarico:'scaricoOut', picking:'pickingOut' }[which]).innerHTML] : labelsData.map(l => lblHtml(l));
+  const lq = ($('lblQ').value || '').trim().toLowerCase();
+  const lsrc = lq ? labelsData.filter(l => l.code.toLowerCase().includes(lq)) : labelsData;
+  pv.pages = land ? [$({ scarico:'scaricoOut', picking:'pickingOut' }[which]).innerHTML] : lsrc.map(l => lblHtml(l));
+
   $('pvTitle').textContent = TITLES[which];
   $('pgnav').style.display = land ? 'none' : 'flex';
   $('pvScale').style.display = land ? 'none' : 'flex';
@@ -816,6 +835,13 @@ document.addEventListener('click', e => {
   if (act === 'load') $('file').click();
   else if (act === 'preview') openPreview(cur);
   else if (act === 'print') printSection(cur);
+  else if (act === 'printone'){
+    const l = labelsData[selL]; if (!l) return;
+    document.querySelectorAll('#labelsOut .lbl').forEach(x => { x.dataset.hide = (+x.dataset.i === selL) ? '' : '1'; });
+    printSection('labels');
+    setTimeout(() => document.querySelectorAll('#labelsOut .lbl').forEach(x => delete x.dataset.hide), 600);
+  }
+
   else if (act === 'xlsx') downloadXlsx(cur === 'scarico' ? 'scarico' : 'picking');
   else if (act === 'resetticks'){ state.ticks = {}; save(); renderScarico(); renderPicking(); toast('Spunte cancellate'); }
   else if (act === 'tzauto'){ state.tblZoom = 0; save(); syncCtl(); tzShow(); tzHide(); }
@@ -890,6 +916,10 @@ window.addEventListener('dragenter', e => { e.preventDefault(); dragN++; $('drop
 window.addEventListener('dragleave', () => { if (--dragN <= 0){ dragN = 0; $('drop').classList.remove('show'); } });
 window.addEventListener('dragover', e => e.preventDefault());
 window.addEventListener('drop', e => { e.preventDefault(); dragN = 0; $('drop').classList.remove('show'); handleFile(e.dataTransfer.files[0]); });
+
+
+$('lblQ').addEventListener('input', () => { if (state.items.length) renderLabels(); });
+
 
 load();
 state.labelDate = todayIso();
