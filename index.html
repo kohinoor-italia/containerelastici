@@ -147,6 +147,10 @@ table.t tr.tot td{ font-weight:800; background:#dff3ec !important; border-top:2p
 /* ---------- Picking (come in Excel) ---------- */
 #pickingOut{ overflow-x:auto; padding:2px; }
 .pk-sheet{ font-family:Arial,Helvetica,sans-serif; color:#000; min-width:900px; }
+#pickingOut{ --pkh:30pt; }
+#pickingOut .pk-sheet{ width:calc(277mm / var(--scr,1)); min-width:0; zoom:var(--scr,1); }
+
+
 .pk-title{ text-align:center; font-weight:700; font-size:16pt; line-height:27.75pt; }
 .pk-par{ display:flex; justify-content:space-between; align-items:center; min-height:21.75pt; margin-bottom:6pt; font-size:11pt; }
 .pk-par .v{ display:inline-block; min-width:60px; border:1px solid #000; text-align:center; font-weight:700; font-size:12pt; margin-left:8px; padding:1px 8px; }
@@ -275,6 +279,8 @@ table.t.pk tr.tot td.ne{ background:transparent !important; border:0; }
   table.t tbody tr:hover td{ background:inherit; }
   .pk-sheet{ min-width:0; }
   #pickingOut{ overflow:visible; padding:0; }
+  #pickingOut .pk-sheet{ width:auto; zoom:var(--fit,1); }
+
   table.t.pk td.pq.full.on{ background:none; }
   .lblwrap{ display:block; }
   .labels{ display:block; }
@@ -675,7 +681,12 @@ function syncCtl(){
   document.querySelectorAll('.tz').forEach(i => i.value = z);
   document.querySelectorAll('.tzv').forEach(e => e.textContent = z + '%');
   document.querySelectorAll('[data-act="tzauto"]').forEach(b => b.classList.toggle('on', !state.tblZoom));
+  if (state.items.length && cur === 'picking'){
+    const f = state.tblZoom > 0 ? state.tblZoom / 100 : autoFit('picking');
+    $('pickingOut').style.setProperty('--scr', f.toFixed(3));
+  }
 }
+
 
 function renderAll(){
   const has = state.items.length > 0;
