@@ -717,33 +717,51 @@ function downloadXlsx(kind){
 }
 
 /* ---------- Adattamento automatico su A4 (landscape, margini 10mm) ---------- */
+/* 1 foglio solo + colonna "Articolo" sempre su una riga (Picking) */
 function autoFit(which){
   const src = { scarico:'scaricoOut', picking:'pickingOut' }[which];
   if (!src) return 1;
   const m = document.createElement('div');
   m.className = 'meas';
   m.style.cssText = 'position:absolute;left:-9999px;top:0;visibility:hidden;width:277mm;';
-  m.innerHTML = $(src).innerHTML;
+  m.innerHTML = '<style>.meas .pk-sheet{min-width:0} .meas table.t.pk tbody tr:not(.tot) td:nth-child(2){white-space:nowrap}</style>' + $(src).innerHTML;
   document.body.appendChild(m);
-  const b = m.querySelector('.fitbox');
-  const MIN = 0.4;                               /* minimo dello slider: cerca la scala per 1 solo foglio */
 
+  /* avvolgo la descrizione in uno span per misurarne la larghezza reale */
+  const descs = [];
+  if (which === 'picking'){
+    m.querySelectorAll('table.t.pk tbody tr:not(.tot) td:nth-child(2)').forEach(td => {
+      const sp = document.createElement('span');
+      sp.innerHTML = td.innerHTML;
+      td.innerHTML = '';
+      td.appendChild(sp);
+      descs.push([td, sp]);
+    });
+  }
+
+  const b = m.querySelector('.fitbox');
+  const MIN = 0.4;
   let lo = MIN;
   if (b){
-    const page = 190 * 96 / 25.4 * 0.95;         /* înălțimea utilă A4 landscape */
-    const h = z => { b.style.zoom = z; return b.getBoundingClientRect().height; };
-
-    const n = 1;                                       /* mereu o singură foaie */
-
+    const page = 190 * 96 / 25.4 * 0.95;   /* altezza utile A4 landscape */
+    const ok = z => {
+      b.style.zoom = z;
+      if (b.getBoundingClientRect().height > page) return false;          /* max 1 foglio */
+      for (const [td, sp] of descs){                                       /* descrizione su 1 riga */
+        if (sp.offsetWidth > td.clientWidth - 11) return false;            /* 10px padding + margine */
+      }
+      return true;
+    };
     let hi = 2.2;
     for (let i = 0; i < 14; i++){
       const mid = (lo + hi) / 2;
-      if (h(mid) > n * page) hi = mid; else lo = mid;
+      if (!ok(mid)) hi = mid; else lo = mid;
     }
   }
   m.remove();
   return lo;
 }
+
 
 function computeFit(which){
   let f = 1;
