@@ -173,6 +173,10 @@ table.t.pk tr.tot td.ne{ background:transparent !important; border:0; }
 .labels .lbl:hover{ transform:translateY(-4px) scale(1.02); box-shadow:0 12px 26px rgba(12,43,44,.18); }
 .lbl.sel{ outline:3px solid var(--acc); outline-offset:2px; }
 
+.lblsearch{ display:flex; gap:8px; align-items:center; flex:1 1 220px; min-width:180px; max-width:420px; }
+.lblsearch input{ flex:1; font:700 13px 'Manrope',sans-serif; color:var(--ink); background:#eef3f2; border:2px solid transparent; border-radius:10px; padding:7px 12px; outline:0; transition:.2s; }
+.lblsearch input:focus{ border-color:var(--acc); background:#fff; }
+
 /* ---------- Anteprima ---------- */
 .pv{ position:fixed; inset:0; z-index:60; display:none; flex-direction:column; background:rgba(7,24,24,.78); backdrop-filter:blur(10px); }
 .pv.open{ display:flex; animation:fade .25s; }
@@ -738,10 +742,7 @@ function printSection(which){
   setTimeout(() => { window.print(); setTimeout(() => { delete document.body.dataset.print; }, 300); }, 50);
 }
 
-.lblsearch{ display:flex; gap:8px; align-items:center; flex:1 1 220px; min-width:180px; max-width:420px; }
-.lblsearch input{ flex:1; font:700 13px 'Manrope',sans-serif; color:var(--ink); background:#eef3f2; border:2px solid transparent; border-radius:10px; padding:7px 12px; outline:0; transition:.2s; }
-.lblsearch input:focus{ border-color:var(--acc); background:#fff; }
-@media print{ .lblsearch{ display:none !important; } }
+
 
 
 
