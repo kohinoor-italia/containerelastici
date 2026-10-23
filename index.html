@@ -401,7 +401,8 @@ function barcodeSvg(text, x, y, w, h){
 const $ = id => document.getElementById(id);
 const LS = 'scarico_elastici_v1';
 let state = { items:[], order:'', orderDate:'', fileName:'', loadedAt:'', pallet:320, labelDate:'',
-  lblScale:100, lblX:0, lblY:0, thumb:190, tblZoom:0, ticks:{} };
+lblScale:105, lblX:15, lblY:0, thumb:200, tblZoom:0, ticks:{} };
+
 let cur = 'scarico', labelsData = [], selL = 0;
 
 function save(){ try{ localStorage.setItem(LS, JSON.stringify(state)); }catch(e){ console.warn('localStorage non disponibile', e); } }
@@ -579,24 +580,26 @@ function renderPicking(){
   </div>`;
 }
 
-function labelSvg(code, qty, date, last){
+function labelSvg(code, qty, date, last, part){
   const s = state.lblScale / 100;
   return `<svg viewBox="0 0 496 751" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif" font-weight="700">
 <rect width="496" height="751" fill="#fff"/>
 <g transform="translate(${state.lblX} ${state.lblY}) translate(248 375) scale(${s}) translate(-248 -375)">
-${barcodeSvg(code, 40, 40, 416, 160)}
-<text x="248" y="275" font-size="64" text-anchor="middle" textLength="416" lengthAdjust="spacingAndGlyphs">${esc(code)}</text>
+${barcodeSvg(code, 40, 88, 416, 112)}
+<text x="248" y="275" font-size="64" font-weight="900" font-family="Arial Black,Arial,Helvetica,sans-serif" text-anchor="middle" textLength="416" lengthAdjust="spacingAndGlyphs">${esc(code)}</text>
 <rect x="40" y="322" width="416" height="6" fill="#000"/>
-<text x="40" y="470" font-size="84" textLength="215" lengthAdjust="spacingAndGlyphs">QTA’:</text>
+<text x="40" y="470" font-size="84" font-weight="400" font-family="Impact,Haettenschweiler,Arial Narrow,sans-serif" textLength="215" lengthAdjust="spacingAndGlyphs">QTA&#8217;:</text>
 ${barcodeSvg(String(qty), 275, 370, 181, 100)}
 <text x="365" y="570" font-size="96" text-anchor="middle">${qty}</text>
 <text x="248" y="685" font-size="96" text-anchor="middle" textLength="416" lengthAdjust="spacingAndGlyphs">${esc(date)}</text>
+${last && part ? '<rect x="128" y="702" width="240" height="8" fill="#000"/>' : ''}
 </g>
-${last ? '<rect x="0" y="738" width="496" height="13" fill="#000"/>' : ''}
+${last && !part ? '<rect x="0" y="738" width="496" height="13" fill="#000"/>' : ''}
 </svg>`;
 }
 
-const lblHtml = (l, extra) => `<div class="lbl${extra || ''}" data-i="${l.i}">${labelSvg(l.code, l.qty, l.date, l.last)}</div>`;
+
+const lblHtml = (l, extra) => `<div class="lbl${extra || ''}" data-i="${l.i}">${labelSvg(l.code, l.qty, l.date, l.last, l.part)}</div>`;
 
 function renderLabels(){
   const size = state.pallet, items = sortItems(state.items);
@@ -604,7 +607,7 @@ function renderLabels(){
   labelsData = [];
   for (const it of items){
     const p = pallets(it.qty, size);
-    p.forEach((q, i) => labelsData.push({ i:labelsData.length, code:it.code, qty:q, date, last:i === p.length - 1 }));
+    p.forEach((q, i) => labelsData.push({ i:labelsData.length, code:it.code, qty:q, date, last:i === p.length - 1, part:q !== size }));
   }
   if (selL >= labelsData.length) selL = 0;
   $('labelsOut').innerHTML = labelsData.map(l => lblHtml(l, l.i === selL ? ' sel' : '')).join('');
@@ -814,7 +817,8 @@ document.addEventListener('click', e => {
   else if (act === 'resetticks'){ state.ticks = {}; save(); renderScarico(); renderPicking(); toast('Spunte cancellate'); }
   else if (act === 'tzauto'){ state.tblZoom = 0; save(); syncCtl(); tzShow(); tzHide(); }
 
-  else if (act === 'lblreset'){ state.lblScale = 100; state.lblX = 0; state.lblY = 0; save(); syncCtl(); scheduleLabels(); }
+else if (act === 'lblreset'){ state.lblScale = 105; state.lblX = 15; state.lblY = 0; state.thumb = 200; save(); syncCtl(); scheduleLabels(); }
+
 });
 
 document.querySelectorAll('[data-lbl]').forEach(i => i.addEventListener('input', () => {
