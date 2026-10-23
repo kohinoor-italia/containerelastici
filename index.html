@@ -588,15 +588,16 @@ function labelSvg(code, qty, date, last, part){
 ${barcodeSvg(code, 40, 88, 416, 112)}
 <text x="248" y="275" font-size="64" font-weight="900" font-family="Arial Black,Arial,Helvetica,sans-serif" text-anchor="middle" textLength="416" lengthAdjust="spacingAndGlyphs">${esc(code)}</text>
 <rect x="40" y="322" width="416" height="6" fill="#000"/>
-<text x="40" y="470" font-size="84" font-weight="400" font-family="Impact,Haettenschweiler,Arial Narrow,sans-serif" textLength="215" lengthAdjust="spacingAndGlyphs">QTA&#8217;:</text>
+<text x="40" y="470" font-size="126" font-weight="400" font-family="Impact,Haettenschweiler,Arial Narrow,sans-serif" textLength="215" lengthAdjust="spacingAndGlyphs">QTA&#8217;:</text>
 ${barcodeSvg(String(qty), 275, 370, 181, 100)}
 <text x="365" y="570" font-size="96" text-anchor="middle">${qty}</text>
-<text x="248" y="685" font-size="96" text-anchor="middle" textLength="416" lengthAdjust="spacingAndGlyphs">${esc(date)}</text>
-${last && part ? '<rect x="128" y="702" width="240" height="8" fill="#000"/>' : ''}
+<text x="248" y="685" font-size="86" text-anchor="middle" textLength="416" lengthAdjust="spacingAndGlyphs">${esc(date)}</text>
 </g>
+${last && part ? `<rect x="${128 + state.lblX}" y="743" width="240" height="8" fill="#000"/>` : ''}
 ${last && !part ? '<rect x="0" y="738" width="496" height="13" fill="#000"/>' : ''}
 </svg>`;
 }
+
 
 
 const lblHtml = (l, extra) => `<div class="lbl${extra || ''}" data-i="${l.i}">${labelSvg(l.code, l.qty, l.date, l.last, l.part)}</div>`;
