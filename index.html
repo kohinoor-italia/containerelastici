@@ -401,7 +401,7 @@ function barcodeSvg(text, x, y, w, h){
 const $ = id => document.getElementById(id);
 const LS = 'scarico_elastici_v1';
 let state = { items:[], order:'', orderDate:'', fileName:'', loadedAt:'', pallet:320, labelDate:'',
-lblScale:105, lblX:15, lblY:0, thumb:200, tblZoom:0, ticks:{} };
+lblScale:105, lblX:15, lblY:0, thumb:120, tblZoom:0, ticks:{} };
 
 let cur = 'scarico', labelsData = [], selL = 0;
 
@@ -409,6 +409,8 @@ function save(){ try{ localStorage.setItem(LS, JSON.stringify(state)); }catch(e)
 function load(){ try{ const s = localStorage.getItem(LS); if (s) state = Object.assign(state, JSON.parse(s)); }catch(e){} }
 
 const shortCode = c => c.replace(/^Y525/, '');
+const todayIso = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+
 
 function sortKey(item){
   const s = shortCode(item.code);
@@ -484,7 +486,7 @@ function parseWorkbook(buf, name){
   state.items = items;
   state.order = order;
   state.orderDate = orderDate;
-  state.labelDate = orderDate || state.labelDate;
+  state.labelDate = todayIso();
   state.fileName = name;
   state.loadedAt = new Date().toLocaleString('it-IT');
   state.ticks = {};
@@ -593,8 +595,8 @@ ${barcodeSvg(String(qty), 275, 370, 181, 100)}
 <text x="365" y="570" font-size="96" text-anchor="middle">${qty}</text>
 <text x="248" y="685" font-size="86" text-anchor="middle" textLength="416" lengthAdjust="spacingAndGlyphs">${esc(date)}</text>
 </g>
-${last && part ? `<rect x="${128 + state.lblX}" y="743" width="240" height="8" fill="#000"/>` : ''}
-${last && !part ? '<rect x="0" y="738" width="496" height="13" fill="#000"/>' : ''}
+${last ? `<rect x="${128 + state.lblX}" y="743" width="240" height="8" fill="#000"/>` : ''}
+
 </svg>`;
 }
 
@@ -818,7 +820,7 @@ document.addEventListener('click', e => {
   else if (act === 'resetticks'){ state.ticks = {}; save(); renderScarico(); renderPicking(); toast('Spunte cancellate'); }
   else if (act === 'tzauto'){ state.tblZoom = 0; save(); syncCtl(); tzShow(); tzHide(); }
 
-else if (act === 'lblreset'){ state.lblScale = 105; state.lblX = 15; state.lblY = 0; state.thumb = 200; save(); syncCtl(); scheduleLabels(); }
+else if (act === 'lblreset'){ state.lblScale = 105; state.lblX = 15; state.lblY = 0; state.thumb = 120; save(); syncCtl(); scheduleLabels(); }
 
 });
 
@@ -890,7 +892,9 @@ window.addEventListener('dragover', e => e.preventDefault());
 window.addEventListener('drop', e => { e.preventDefault(); dragN = 0; $('drop').classList.remove('show'); handleFile(e.dataTransfer.files[0]); });
 
 load();
+state.labelDate = todayIso();
 document.body.dataset.tab = cur;
+
 renderAll();
 moveInd();
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(moveInd);
