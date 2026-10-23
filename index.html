@@ -339,8 +339,9 @@ table.t.pk tr.tot td.ne{ background:transparent !important; border:0; }
     <div class="bar">
       <button class="btn" data-act="preview" data-ic="eye"> Anteprima</button>
       <button class="btn sec" data-act="print" data-ic="print"> Stampa</button>
-      <button class="btn gh" data-act="printone" data-ic="print"> Doar quella selezionata</button>
-      <div class="lblsearch"><input type="search" id="lblQ" placeholder="Cerca etichetta (cod)…" autocomplete="off"></div>
+<button class="btn gh" data-act="printone" data-ic="print"> Solo selezionata</button>
+
+      <div class="lblsearch"><input type="search" id="lblQ" placeholder="Cerca etichetta (codice)…" autocomplete="off"></div>
       <span class="chip" id="lblCount"></span>
     </div>
 
@@ -632,7 +633,8 @@ ${last ? `<g transform="translate(${state.lblX} 0)"><line x1="172" y1="745.5" x2
 
 
 
-const lblHtml = (l, extra) => `<div class="lbl${extra || ''}" data-i="${l.i}">${labelSvg(l.code, l.qty, l.date, l.last, l.part)}</div>`;
+const lblHtml = (l, extra) => `<div class="lbl${extra || ''}" data-i="${l.i}" title="Etichetta ${l.i + 1} di ${labelsData.length} · ${esc(l.code)} · ${l.qty} pz">${labelSvg(l.code, l.qty, l.date, l.last, l.part)}</div>`;
+
 
 function renderLabels(){
   const size = state.pallet, items = sortItems(state.items);
